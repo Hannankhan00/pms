@@ -21,6 +21,10 @@ import {
   Bell,
   BarChart3,
   Settings,
+  Receipt,
+  CreditCard,
+  Wallet,
+  TrendingUp,
   Pill,
   Stethoscope,
 } from "lucide-react";
@@ -39,12 +43,15 @@ export function Sidebar() {
     { label: t.navigation.prescriptions, href: "/dashboard/prescriptions", icon: FileText },
     { label: t.navigation.patients, href: "/dashboard/patients", icon: HeartPulse },
     { label: t.doctors?.title ?? "Doctors & Prescribers", href: "/dashboard/doctors", icon: Stethoscope },
+    { label: t.expenses?.title ?? "Operating Expenses", href: "/dashboard/expenses", icon: Receipt },
+    { label: t.payables?.title ?? "Accounts Payable", href: "/dashboard/payables", icon: CreditCard },
+    { label: t.receivables?.title ?? "Accounts Receivable", href: "/dashboard/receivables", icon: Wallet },
+    { label: t.finance?.title ?? "Financial Intelligence", href: "/dashboard/finance", icon: TrendingUp },
+    { label: t.reports?.title ?? "Reports & Analytics", href: "/dashboard/reports", icon: BarChart3 },
     { label: t.navigation.users, href: "/dashboard/roles", icon: Users },
     { label: t.navigation.staff, href: "/dashboard/staff", icon: UserCheck },
-    { label: t.navigation.finance, href: "#finance", icon: CircleDollarSign, isPlaceholder: true },
     { label: t.navigation.compliance, href: "#compliance", icon: ShieldAlert, isPlaceholder: true },
     { label: t.navigation.notifications, href: "#notifications", icon: Bell, isPlaceholder: true },
-    { label: t.navigation.reports, href: "#reports", icon: BarChart3, isPlaceholder: true },
     { label: t.navigation.settings, href: "#system", icon: Settings, isPlaceholder: true },
   ];
 

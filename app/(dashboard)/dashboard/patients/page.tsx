@@ -81,6 +81,18 @@ interface PatientDetailRecord extends PatientRecord {
   }>;
 }
 
+function calculateAge(dobString?: string | null) {
+  if (!dobString) return "N/A";
+  const dob = new Date(dobString);
+  const now = new Date();
+  let age = now.getFullYear() - dob.getFullYear();
+  const m = now.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < dob.getDate())) {
+    age--;
+  }
+  return age;
+}
+
 export default function PatientsPage() {
   const { t, formatCurrency } = useI18n();
   const [patients, setPatients] = useState<PatientRecord[]>([]);
@@ -200,14 +212,6 @@ export default function PatientsPage() {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const calculateAge = (dobString?: string | null) => {
-    if (!dobString) return "N/A";
-    const dob = new Date(dobString);
-    const diffMs = Date.now() - dob.getTime();
-    const ageDt = new Date(diffMs);
-    return Math.abs(ageDt.getUTCFullYear() - 1970);
   };
 
   const getStatusBadge = (status: string) => {

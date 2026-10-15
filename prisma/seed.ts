@@ -223,6 +223,58 @@ const PERMISSIONS = [
     module: "clinical",
     description: "Dispense prescribed medications at checkout",
   },
+
+  // Finance & Accounting (Phase 4)
+  {
+    code: "finance.view",
+    name: "View Finance",
+    module: "finance",
+    description: "View financial reports, profit metrics, and ledgers",
+  },
+  {
+    code: "finance.manage",
+    name: "Manage Finance",
+    module: "finance",
+    description: "Record operating expenses and authorize supplier payments",
+  },
+  {
+    code: "expense.view",
+    name: "View Expenses",
+    module: "finance",
+    description: "View branch operating expenses and overheads",
+  },
+  {
+    code: "expense.create",
+    name: "Create Expense",
+    module: "finance",
+    description: "Record new operational expenses",
+  },
+  {
+    code: "payables.manage",
+    name: "Manage Payables",
+    module: "finance",
+    description: "Disburse payments to pharmaceutical suppliers",
+  },
+  {
+    code: "receivables.manage",
+    name: "Manage Receivables",
+    module: "finance",
+    description: "Collect and settle customer credit sale receipts",
+  },
+
+  // Reports & Analytics (Phase 5)
+  {
+    code: "reports.view",
+    name: "View Reports",
+    module: "reports",
+    description: "View analytical reports, sales trends, inventory intelligence, and EOD shifts",
+  },
+  {
+    code: "reports.manage",
+    name: "Manage Reports",
+    module: "reports",
+    description: "Export and configure analytics dashboards and operational reports",
+  },
 ];
 
 async function main() {

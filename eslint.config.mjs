@@ -20,6 +20,17 @@ const eslintConfig = defineConfig([
           ],
         },
       ],
+      "@typescript-eslint/no-explicit-any": "warn",
+    },
+  },
+  {
+    rules: {
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" },
+      ],
+      "react-hooks/set-state-in-effect": "warn",
     },
   },
   // Override default ignores of eslint-config-next.
@@ -29,6 +40,7 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    "tests/**",
   ]),
 ]);
 

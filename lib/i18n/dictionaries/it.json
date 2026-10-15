@@ -89,7 +89,8 @@
     "tenantIsolated": "Tenant Isolato",
     "hubContext": "Contesto Hub",
     "phase1Notice": "Fase 1+",
-    "loading": "Caricamento in corso..."
+    "loading": "Caricamento in corso...",
+    "refresh": "Aggiorna"
   },
   "catalog": {
     "title": "Catalogo Farmaci Principale",
@@ -301,5 +302,101 @@
     "cashDrops": "Versamenti di Cassa",
     "payouts": "Uscite di Cassa",
     "recordCashDrop": "Registra Versamento / Prelievo"
+  },
+  "expenses": {
+    "title": "Spese Operative",
+    "subtitle": "Monitoraggio costi operativi di filiale, utenze e forniture cliniche",
+    "recordExpense": "Registra Spesa",
+    "manageCategories": "Categorie di Spesa",
+    "addCategory": "Nuova Categoria",
+    "category": "Categoria",
+    "amount": "Importo",
+    "date": "Data Spesa",
+    "description": "Descrizione",
+    "paymentMethod": "Metodo di Pagamento",
+    "branch": "Filiale",
+    "receiptUrl": "Documento / Ricevuta",
+    "reverse": "Storna Transazione",
+    "reversed": "Stornato",
+    "reversalReason": "Motivo dello Storno",
+    "confirmReverse": "Conferma Storno"
+  },
+  "payables": {
+    "title": "Contabilità Fornitori (Debiti)",
+    "subtitle": "Gestione debiti verso fornitori, saldo fatture d'acquisto ed estratti conto",
+    "totalPayables": "Totale Debiti Fornitori",
+    "activeSuppliers": "Fornitori Attivi",
+    "pendingInvoices": "Fatture d'Acquisto da Saldare",
+    "supplier": "Nome Fornitore",
+    "currentBalance": "Saldo Dovuto",
+    "recordPayment": "Emetti Pagamento",
+    "amountToPay": "Importo Pagamento",
+    "selectInvoices": "Assegna a Ordini d'Acquisto",
+    "referenceNumber": "Riferimento Assegno / Bonifico",
+    "paymentSuccess": "Pagamento fornitore registrato e mastro aggiornato"
+  },
+  "receivables": {
+    "title": "Contabilità Clienti (Crediti)",
+    "subtitle": "Gestione crediti verso clienti, vendite a rate e incassi",
+    "totalReceivables": "Totale Crediti Clienti",
+    "creditCustomers": "Clienti con Fido",
+    "outstandingInvoices": "Vendite a Credito da Incassare",
+    "customer": "Nome Cliente",
+    "creditLimit": "Fido Massimo",
+    "currentBalance": "Importo da Saldare",
+    "receivePayment": "Incassa Pagamento",
+    "amountToReceive": "Importo Incassato",
+    "selectSales": "Assegna a Vendite a Credito",
+    "receiptSuccess": "Incasso credito cliente registrato e aggiornato nel mastro"
+  },
+  "finance": {
+    "title": "Intelligence Finanziaria Direzionale",
+    "subtitle": "Margine lordo in tempo reale, costo del venduto e redditività",
+    "grossProfit": "Margine Lordo",
+    "totalRevenue": "Fatturato Totale",
+    "cogs": "Costo del Venduto (COGS)",
+    "grossMargin": "Percentuale Margine Lordo",
+    "operatingExpenses": "Spese Operative",
+    "netOperatingIncome": "Utile Operativo Netto",
+    "itemContribution": "Margine Contributivo per Farmaco",
+    "dailyPerformance": "Trend Giornaliero Vendite vs Costo"
+  },
+  "reports": {
+    "title": "Report e Analitica",
+    "export": "Esporta CSV",
+    "presets": {
+      "today": "Oggi",
+      "last7Days": "Ultimi 7 Giorni",
+      "last30Days": "Ultimi 30 Giorni",
+      "thisMonth": "Questo Mese",
+      "last90Days": "Ultimi 90 Giorni"
+    },
+    "sales": {
+      "title": "Analisi Vendite e Fatturato",
+      "subtitle": "Volumi di vendita, ripartizione canali di pagamento e andamento giornaliero",
+      "totalRevenue": "Fatturato Totale",
+      "invoices": "Scontrini Emessi",
+      "avgBasket": "Scontrino Medio",
+      "totalDiscount": "Sconti Applicati",
+      "totalTax": "IVA Incassata",
+      "dailyTrend": "Andamento Giornaliero del Fatturato",
+      "dailyTrendDesc": "Incassi e volumi di vendita per singolo giorno di calendario",
+      "paymentChannels": "Metodi di Pagamento"
+    },
+    "inventory": {
+      "title": "Salute e Intelligence del Magazzino",
+      "subtitle": "Valutazione del capitale, sorveglianza scadenze e analisi dei lotti fermi",
+      "valuationTab": "Valutazione Capitale",
+      "expiryTab": "Sorveglianza Scadenze",
+      "movementTab": "Rotazione e Lotti Fermi"
+    },
+    "shifts": {
+      "title": "Riconciliazione Casse (Chiusura Giornaliera)",
+      "subtitle": "Verifica fondo cassa, rilevamento differenze e controllo dei prelievi di sicurezza"
+    },
+    "clinical": {
+      "title": "Analisi Clinica e Dispensazione",
+      "subtitle": "Tasso di verifica ricette, ripartizione tra farmaci con ricetta e da banco, e medici prescrittori"
+    }
   }
 }

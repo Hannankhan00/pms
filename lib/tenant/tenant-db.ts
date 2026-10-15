@@ -172,6 +172,16 @@ function createTenantModelDelegate<T extends Record<string, any>>(
         },
       });
     },
+
+    groupBy: (args: any) => {
+      return modelDelegate.groupBy({
+        ...args,
+        where: {
+          ...args?.where,
+          tenantId,
+        },
+      });
+    },
   };
 }
 
@@ -224,6 +234,10 @@ export interface TenantDb {
 
   // Finance & Audit
   expense: any;
+  expenseCategory: any;
+  supplierPaymentLink: any;
+  customerPaymentLink: any;
+  accountLedger: any;
   auditLog: any;
 
   transaction: <T>(fn: (txDb: TenantDb) => Promise<T>) => Promise<T>;
@@ -329,6 +343,10 @@ export function tenantDb(tenantId: string, client: DatabaseClient = prisma): Ten
 
     // Finance & Audit
     expense: createTenantModelDelegate(c.expense, tenantId),
+    expenseCategory: createTenantModelDelegate(c.expenseCategory, tenantId),
+    supplierPaymentLink: createTenantModelDelegate(c.supplierPaymentLink, tenantId),
+    customerPaymentLink: createTenantModelDelegate(c.customerPaymentLink, tenantId),
+    accountLedger: createTenantModelDelegate(c.accountLedger, tenantId),
     auditLog: createTenantModelDelegate(c.auditLog, tenantId),
 
     /**

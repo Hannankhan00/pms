@@ -89,7 +89,8 @@
     "tenantIsolated": "Tenant Isolated",
     "hubContext": "Hub Context",
     "phase1Notice": "Phase 1+",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "refresh": "Refresh"
   },
   "catalog": {
     "title": "Medicine Master Catalog",
@@ -301,5 +302,101 @@
     "cashDrops": "Cash Drops",
     "payouts": "Payouts",
     "recordCashDrop": "Record Cash Drop / Payout"
+  },
+  "expenses": {
+    "title": "Operating Expenses",
+    "subtitle": "Track operational branch overheads, utilities, and clinical costs",
+    "recordExpense": "Record Expense",
+    "manageCategories": "Expense Categories",
+    "addCategory": "New Category",
+    "category": "Category",
+    "amount": "Amount",
+    "date": "Expense Date",
+    "description": "Description",
+    "paymentMethod": "Payment Method",
+    "branch": "Branch",
+    "receiptUrl": "Receipt URL / Document",
+    "reverse": "Reverse Transaction",
+    "reversed": "Reversed",
+    "reversalReason": "Reason for Reversal",
+    "confirmReverse": "Confirm Reversal"
+  },
+  "payables": {
+    "title": "Accounts Payable",
+    "subtitle": "Manage supplier liabilities, invoice settlements, and vendor accounts",
+    "totalPayables": "Total Payables",
+    "activeSuppliers": "Active Suppliers",
+    "pendingInvoices": "Pending Invoices",
+    "supplier": "Supplier Name",
+    "currentBalance": "Outstanding Balance",
+    "recordPayment": "Disburse Payment",
+    "amountToPay": "Payment Amount",
+    "selectInvoices": "Allocate to Purchase Orders",
+    "referenceNumber": "Cheque / Transfer Reference",
+    "paymentSuccess": "Supplier payment disbursed and ledger posted"
+  },
+  "receivables": {
+    "title": "Accounts Receivable",
+    "subtitle": "Track customer credit purchases, outstanding tabs, and collections",
+    "totalReceivables": "Total Receivables",
+    "creditCustomers": "Credit Customers",
+    "outstandingInvoices": "Credit Sales",
+    "customer": "Customer Name",
+    "creditLimit": "Credit Limit",
+    "currentBalance": "Outstanding Due",
+    "receivePayment": "Collect Payment",
+    "amountToReceive": "Receipt Amount",
+    "selectSales": "Allocate to Credit Sales",
+    "receiptSuccess": "Customer credit payment collected and ledger updated"
+  },
+  "finance": {
+    "title": "Executive Financial Intelligence",
+    "subtitle": "Real-time Gross Profit, Cost of Goods Sold, and Revenue Analytics",
+    "grossProfit": "Gross Profit",
+    "totalRevenue": "Total Revenue",
+    "cogs": "Cost of Goods Sold (COGS)",
+    "grossMargin": "Gross Margin",
+    "operatingExpenses": "Operating Expenses",
+    "netOperatingIncome": "Net Operating Income",
+    "itemContribution": "Medication Gross Profit Contribution",
+    "dailyPerformance": "Daily Revenue vs COGS Trend"
+  },
+  "reports": {
+    "title": "Reports & Analytics",
+    "export": "Export CSV",
+    "presets": {
+      "today": "Today",
+      "last7Days": "Last 7 Days",
+      "last30Days": "Last 30 Days",
+      "thisMonth": "This Month",
+      "last90Days": "Last 90 Days"
+    },
+    "sales": {
+      "title": "Sales & Revenue Analytics",
+      "subtitle": "Comprehensive transaction volume, payment channel allocation, and daily billing trajectory",
+      "totalRevenue": "Total Revenue",
+      "invoices": "Invoices Completed",
+      "avgBasket": "Average Basket",
+      "totalDiscount": "Total Discounts",
+      "totalTax": "Tax Collected",
+      "dailyTrend": "Daily Revenue Trajectory",
+      "dailyTrendDesc": "Continuous billing run rate and ticket volume per calendar day",
+      "paymentChannels": "Payment Methods Breakdown"
+    },
+    "inventory": {
+      "title": "Inventory Intelligence & Health",
+      "subtitle": "Capital valuation, proactive expiry surveillance, velocity analysis, and dead stock identification",
+      "valuationTab": "Capital Valuation",
+      "expiryTab": "Expiry Surveillance",
+      "movementTab": "Movement & Dead Stock"
+    },
+    "shifts": {
+      "title": "End of Day (EOD) Shift Reconciliation",
+      "subtitle": "Cash drawer balance verification, cashier variance tracking, and audit trail of safe drops"
+    },
+    "clinical": {
+      "title": "Clinical & Dispensing Analytics",
+      "subtitle": "Prescription verification rates, regulated Rx versus OTC sales distribution, and prescriber partnerships"
+    }
   }
 }

@@ -89,7 +89,8 @@
     "tenantIsolated": "Tenant Isolé",
     "hubContext": "Contexte Hub",
     "phase1Notice": "Phase 1+",
-    "loading": "Chargement en cours..."
+    "loading": "Chargement en cours...",
+    "refresh": "Actualiser"
   },
   "catalog": {
     "title": "Catalogue Principal des Médicaments",
@@ -301,5 +302,102 @@
     "cashDrops": "Prélèvements de Caisse",
     "payouts": "Décaissements",
     "recordCashDrop": "Enregistrer un Dépôt / Décaissement"
+  },
+  "expenses": {
+    "title": "Dépenses d'Exploitation",
+    "subtitle": "Suivi des charges d'exploitation, utilités et coûts cliniques",
+    "recordExpense": "Enregistrer une Dépense",
+    "manageCategories": "Catégories de Dépenses",
+    "addCategory": "Nouvelle Catégorie",
+    "category": "Catégorie",
+    "amount": "Montant",
+    "date": "Date de Dépense",
+    "description": "Description",
+    "paymentMethod": "Mode de Règlement",
+    "branch": "Succursale",
+    "receiptUrl": "Justificatif / Reçu",
+    "reverse": "Contrepasser la Transaction",
+    "reversed": "Contrepassé",
+    "reversalReason": "Motif de Contrepassation",
+    "confirmReverse": "Confirmer l'Annulation"
+  },
+  "payables": {
+    "title": "Comptes Fournisseurs (Dettes)",
+    "subtitle": "Gestion des dettes fournisseurs, règlements et factures d'achat",
+    "totalPayables": "Total Dettes Fournisseurs",
+    "activeSuppliers": "Fournisseurs Actifs",
+    "pendingInvoices": "Factures Fournisseurs en Attente",
+    "supplier": "Nom du Fournisseur",
+    "currentBalance": "Solde Dû",
+    "recordPayment": "Effectuer un Règlement",
+    "amountToPay": "Montant du Règlement",
+    "selectInvoices": "Affecter aux Factures d'Achat",
+    "referenceNumber": "Référence Chèque / Virement",
+    "paymentSuccess": "Règlement fournisseur enregistré et grand livre mis à jour"
+  },
+  "receivables": {
+    "title": "Comptes Clients (Créances)",
+    "subtitle": "Suivi des ventes à crédit, encaissements et soldes débiteurs",
+    "totalReceivables": "Total Créances Clients",
+    "creditCustomers": "Clients avec Compte Crédit",
+    "outstandingInvoices": "Ventes à Crédit Impayées",
+    "customer": "Nom du Client",
+    "creditLimit": "Plafond de Crédit",
+    "currentBalance": "Solde Impayé",
+    "receivePayment": "Encaisser un Règlement",
+    "amountToReceive": "Montant Encaissé",
+    "selectSales": "Affecter aux Ventes à Crédit",
+    "receiptSuccess": "Règlement client enregistré et créances mises à jour"
+  },
+  "finance": {
+    "title": "Analytique et Intelligence Financière",
+    "subtitle": "Marge brute en temps réel, coût des marchandises et rentabilité",
+    "grossProfit": "Marge Brute",
+    "totalRevenue": "Chiffre d'Affaires Total",
+    "cogs": "Coût des Marchandises Vendues (COGS)",
+    "grossMargin": "Taux de Marge Brute",
+    "operatingExpenses": "Charges d'Exploitation",
+    "netOperatingIncome": "Résultat d'Exploitation Net",
+    "itemContribution": "Contribution des Médicaments à la Marge",
+    "dailyPerformance": "Ventes Journalières vs Coût d'Achat"
+  },
+  "reports": {
+    "title": "Rapports et Analyses",
+    "export": "Exporter CSV",
+    "presets": {
+      "today": "Aujourd'hui",
+      "last7Days": "7 Derniers Jours",
+      "last30Days": "30 Derniers Jours",
+      "thisMonth": "Ce Mois-ci",
+      "last90Days": "90 Derniers Jours"
+    },
+    "sales": {
+      "title": "Analyse des Ventes et Revenus",
+      "subtitle": "Volume transactionnel, répartition des canaux de paiement et trajectoire journalière",
+      "totalRevenue": "Chiffre d'Affaires Total",
+      "invoices": "Factures Clôturées",
+      "avgBasket": "Panier Moyen",
+      "totalDiscount": "Remises Accordées",
+      "totalTax": "TVA / Taxes Collectées",
+      "dailyTrend": "Trajectoire Quotidienne des Revenus",
+      "dailyTrendDesc": "Évolution du chiffre d'affaires et volume par jour calendaire",
+      "paymentChannels": "Modes de Paiement"
+    },
+    "inventory": {
+      "title": "Intelligence et Santé des Stocks",
+      "subtitle": "Valorisation du capital, surveillance préventive des péremptions et analyse des stocks dormants",
+      "valuationTab": "Valorisation du Capital",
+      "expiryTab": "Surveillance des Péremptions",
+      "movementTab": "Rotation et Stocks Dormants"
+    },
+    "shifts": {
+      "title": "Rapprochement des Caisses (Fin de Journée)",
+      "subtitle": "Vérification des soldes de caisse, suivi des écarts et audit des prélèvements",
+      "shortages": "Déficits de Caisse"
+    },
+    "clinical": {
+      "title": "Analytique Clinique et Délivrance",
+      "subtitle": "Taux de validation des ordonnances, répartition Rx vs Vente Libre et médecins prescripteurs"
+    }
   }
 }
