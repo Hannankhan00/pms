@@ -64,7 +64,9 @@ enum PaymentStatus {
 
 enum PrescriptionStatus {
   PENDING
+  VERIFIED
   DISPENSED
+  REJECTED
   PARTIALLY_DISPENSED
   CANCELLED
 }
@@ -206,9 +208,10 @@ model PharmacyUser {
   tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   role      Role       @relation(fields: [roleId], references: [id], onDelete: Restrict)
   branch    Branch?    @relation(fields: [branchId], references: [id], onDelete: SetNull)
-  sales     Sale[]
-  auditLogs AuditLog[]
-  shifts    Shift[]
+  sales                 Sale[]
+  auditLogs             AuditLog[]
+  shifts                Shift[]
+  verifiedPrescriptions Prescription[] @relation("VerifiedPrescriptions")
 
   @@unique([tenantId, email])
   @@unique([tenantId, hubUserId])
@@ -619,8 +622,11 @@ model Customer {
   name      String    @db.VarChar(191)
   phone     String?   @db.VarChar(50)
   email     String?   @db.VarChar(191)
-  address   String?   @db.VarChar(255)
-  isDeleted Boolean   @default(false)
+  address        String?   @db.VarChar(255)
+  creditLimit    Decimal   @default(0.00) @db.Decimal(12, 2)
+  currentBalance Decimal   @default(0.00) @db.Decimal(12, 2)
+  isActive       Boolean   @default(true)
+  isDeleted      Boolean   @default(false)
   deletedAt DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -783,9 +789,10 @@ model Sale {
   tenant       Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   branch       Branch        @relation(fields: [branchId], references: [id], onDelete: Restrict)
   customer     Customer?     @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  user         PharmacyUser  @relation(fields: [userId], references: [id], onDelete: Restrict)
-  prescription Prescription? @relation(fields: [prescriptionId], references: [id], onDelete: SetNull)
-  shift        Shift?        @relation(fields: [shiftId], references: [id], onDelete: SetNull)
+  user                   PharmacyUser   @relation(fields: [userId], references: [id], onDelete: Restrict)
+  prescription           Prescription?  @relation("SaleAttachedPrescription", fields: [prescriptionId], references: [id], onDelete: SetNull)
+  dispensedPrescriptions Prescription[] @relation("PrescriptionDispensedSale")
+  shift                  Shift?         @relation(fields: [shiftId], references: [id], onDelete: SetNull)
   items        SaleItem[]
   payments     Payment[]
 
@@ -854,10 +861,13 @@ model Prescription {
   tenantId           String             @db.VarChar(191)
   patientId          String             @db.VarChar(191)
   doctorId           String?            @db.VarChar(191)
+  verifiedById       String?            @db.VarChar(191)
+  saleId             String?            @db.VarChar(191)
   prescriptionNumber String?            @db.VarChar(100)
   prescriptionDate   DateTime           @default(now())
   status             PrescriptionStatus @default(PENDING)
   notes              String?            @db.VarChar(255)
+  verifiedAt         DateTime?
   isDeleted          Boolean            @default(false)
   deletedAt          DateTime?
   createdAt          DateTime           @default(now())
@@ -865,16 +875,20 @@ model Prescription {
   createdBy          String?            @db.VarChar(191)
   updatedBy          String?            @db.VarChar(191)
 
-  tenant  Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  patient Patient            @relation(fields: [patientId], references: [id], onDelete: Restrict)
-  doctor  Doctor?            @relation(fields: [doctorId], references: [id], onDelete: SetNull)
-  items   PrescriptionItem[]
-  sales   Sale[]
+  tenant     Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  patient    Patient            @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  doctor     Doctor?            @relation(fields: [doctorId], references: [id], onDelete: SetNull)
+  verifiedBy PharmacyUser?      @relation("VerifiedPrescriptions", fields: [verifiedById], references: [id], onDelete: SetNull)
+  sale       Sale?              @relation("PrescriptionDispensedSale", fields: [saleId], references: [id], onDelete: SetNull)
+  sales      Sale[]             @relation("SaleAttachedPrescription")
+  items      PrescriptionItem[]
 
   @@unique([tenantId, prescriptionNumber])
   @@index([tenantId])
   @@index([patientId])
   @@index([doctorId])
+  @@index([verifiedById])
+  @@index([saleId])
   @@index([status])
   @@index([prescriptionDate])
   @@map("prescriptions")
@@ -882,16 +896,17 @@ model Prescription {
 
 /// PrescriptionItem records individual prescribed drug regimens, dosages, and schedules.
 model PrescriptionItem {
-  id             String   @id @default(uuid())
-  prescriptionId String   @db.VarChar(191)
-  medicineId     String   @db.VarChar(191)
-  dosage         String   @db.VarChar(100) // e.g. "500mg" or "1 tablet"
-  frequency      String   @db.VarChar(100) // e.g. "Twice daily after meals"
-  duration       String   @db.VarChar(100) // e.g. "5 days"
-  quantity       Int
-  instructions   String?  @db.VarChar(255)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id               String   @id @default(uuid())
+  prescriptionId   String   @db.VarChar(191)
+  medicineId       String   @db.VarChar(191)
+  dosage           String   @db.VarChar(100) // e.g. "500mg" or "1 tablet"
+  frequency        String   @db.VarChar(100) // e.g. "1x3 daily" or "Twice daily after meals"
+  duration         String   @db.VarChar(100) // e.g. "5 days"
+  quantityRequired Int      @default(1)
+  quantity         Int      @default(1)
+  instructions     String?  @db.VarChar(255)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   prescription Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
   medicine     Medicine     @relation(fields: [medicineId], references: [id], onDelete: Restrict)

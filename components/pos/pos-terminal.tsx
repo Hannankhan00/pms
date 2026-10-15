@@ -25,6 +25,9 @@ import {
   ArrowRight,
   TrendingDown,
   TrendingUp,
+  ShieldCheck,
+  AlertTriangle,
+  X,
 } from "lucide-react";
 import { useI18n } from "@/lib/i18n/context";
 
@@ -32,6 +35,7 @@ interface MedicineOption {
   id: string;
   sku: string;
   name: string;
+  isPrescriptionRequired?: boolean;
   category?: { name: string } | null;
   batches: Array<{
     id: string;
@@ -49,6 +53,32 @@ interface CartItem {
   expiryDate: string;
   unitPrice: number;
   quantity: number;
+  isPrescriptionRequired?: boolean;
+}
+
+interface AttachedPrescription {
+  id: string;
+  prescriptionNumber: string;
+  patient: {
+    id: string;
+    name: string;
+    allergies?: string | null;
+  };
+  doctor?: {
+    id: string;
+    name: string;
+    specialization?: string | null;
+  } | null;
+  items: Array<{
+    medicineId: string;
+    dosage: string;
+    quantityRequired?: number;
+    quantity?: number;
+    medicine?: {
+      id: string;
+      name: string;
+    };
+  }>;
 }
 
 interface BranchOption {
@@ -89,6 +119,28 @@ export function PosTerminal({ medicines, branches = [], branchId }: PosTerminalP
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successResult, setSuccessResult] = useState<any | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Clinical / Prescription Attachment State
+  const [attachedRx, setAttachedRx] = useState<AttachedPrescription | null>(null);
+  const [showAttachRxModal, setShowAttachRxModal] = useState(false);
+  const [verifiedRxList, setVerifiedRxList] = useState<AttachedPrescription[]>([]);
+  const [loadingRx, setLoadingRx] = useState(false);
+  const [rxSearch, setRxSearch] = useState("");
+
+  const fetchVerifiedPrescriptions = async () => {
+    try {
+      setLoadingRx(true);
+      const res = await fetch("/api/clinical/prescriptions?status=VERIFIED");
+      const data = await res.json();
+      if (res.ok && data.success && Array.isArray(data.data)) {
+        setVerifiedRxList(data.data);
+      }
+    } catch {
+      // ignore
+    } finally {
+      setLoadingRx(false);
+    }
+  };
 
   // Shift Management State
   const [activeShift, setActiveShift] = useState<ActiveShift | null>(null);
@@ -235,6 +287,7 @@ export function PosTerminal({ medicines, branches = [], branchId }: PosTerminalP
         {
           medicineId: med.id,
           medicineName: med.name,
+          isPrescriptionRequired: med.isPrescriptionRequired,
           batchId: batch.id,
           batchNumber: batch.batchNumber,
           expiryDate: new Date(batch.expiryDate).toLocaleDateString(),
@@ -259,6 +312,9 @@ export function PosTerminal({ medicines, branches = [], branchId }: PosTerminalP
     );
   };
 
+  const rxRequiredItems = cart.filter((i) => i.isPrescriptionRequired);
+  const isRxBlocked = rxRequiredItems.length > 0 && !attachedRx;
+
   const subtotal = cart.reduce((acc, i) => acc + i.unitPrice * i.quantity, 0);
   const total = subtotal;
 
@@ -269,6 +325,13 @@ export function PosTerminal({ medicines, branches = [], branchId }: PosTerminalP
       return;
     }
 
+    if (isRxBlocked) {
+      setErrorMessage(
+        "Clinical Block: One or more medicines in your cart require a verified prescription. Please attach a verified prescription before completing checkout."
+      );
+      return;
+    }
+
     setIsSubmitting(true);
     setErrorMessage(null);
     setSuccessResult(null);
@@ -276,6 +339,7 @@ export function PosTerminal({ medicines, branches = [], branchId }: PosTerminalP
     try {
       const payload = {
         branchId: activeShift.branchId || branchId || undefined,
+        prescriptionId: attachedRx?.id || undefined,
         items: cart.map((item) => ({
           medicineId: item.medicineId,
           batchId: item.batchId,
@@ -292,7 +356,7 @@ export function PosTerminal({ medicines, branches = [], branchId }: PosTerminalP
         ],
         discount: 0,
         tax: 0,
-        notes: `POS Cashier Transaction - Shift ${activeShift.id.slice(0, 8)}`,
+        notes: `POS Cashier Transaction - Shift ${activeShift.id.slice(0, 8)}${attachedRx ? ` | Rx: ${attachedRx.prescriptionNumber}` : ""}`,
       };
 
       const response = await fetch("/api/pos/checkout", {
@@ -309,6 +373,7 @@ export function PosTerminal({ medicines, branches = [], branchId }: PosTerminalP
 
       setSuccessResult(data.data);
       setCart([]);
+      setAttachedRx(null);
     } catch (err: any) {
       setErrorMessage(err.message || "An error occurred during checkout");
     } finally {
@@ -541,9 +606,24 @@ export function PosTerminal({ medicines, branches = [], branchId }: PosTerminalP
                   <ShoppingCart className="h-4 w-4 text-[#0F766E]" />
                   {t.pos.cart}
                 </CardTitle>
-                <Badge variant="outline" className="font-mono text-xs">
-                  {cart.reduce((a, b) => a + b.quantity, 0)} Items
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-7 text-xs border-[#0F766E]/40 text-[#0F766E] hover:bg-[#0F766E]/10"
+                    onClick={() => {
+                      fetchVerifiedPrescriptions();
+                      setShowAttachRxModal(true);
+                    }}
+                  >
+                    <FileText className="mr-1 h-3 w-3" />
+                    {attachedRx ? t.pos.attachedRx : t.pos.attachPrescription}
+                  </Button>
+                  <Badge variant="outline" className="font-mono text-xs">
+                    {cart.reduce((a, b) => a + b.quantity, 0)} Items
+                  </Badge>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-4 p-4 pt-0">
@@ -567,6 +647,65 @@ export function PosTerminal({ medicines, branches = [], branchId }: PosTerminalP
                 </div>
               )}
 
+              {/* Attached Prescription Banner */}
+              {attachedRx && (
+                <div className="flex items-center justify-between rounded-md border border-teal-200 bg-teal-50/70 p-2.5 text-xs text-teal-900">
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-1.5 font-bold">
+                      <ShieldCheck className="h-4 w-4 text-[#0F766E]" />
+                      <span>{attachedRx.prescriptionNumber}</span>
+                      <Badge className="bg-[#0F766E] text-white text-[9px] px-1 py-0 font-normal">
+                        VERIFIED
+                      </Badge>
+                    </div>
+                    <div className="text-[11px] text-teal-800">
+                      Patient: <span className="font-semibold">{attachedRx.patient.name}</span>
+                      {attachedRx.doctor && ` | Prescriber: Dr. ${attachedRx.doctor.name}`}
+                    </div>
+                    {attachedRx.patient.allergies && (
+                      <div className="text-[10px] text-amber-800 font-medium">
+                        Allergies: {attachedRx.patient.allergies}
+                      </div>
+                    )}
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 px-2 text-[11px] text-red-600 hover:bg-red-50"
+                    onClick={() => setAttachedRx(null)}
+                  >
+                    {t.pos.detach}
+                  </Button>
+                </div>
+              )}
+
+              {/* Clinical Rx Required Warning Banner */}
+              {isRxBlocked && (
+                <div className="rounded-md border border-amber-300 bg-amber-50 p-2.5 text-xs text-amber-900 flex items-start gap-2">
+                  <AlertTriangle className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                  <div className="space-y-1">
+                    <div className="font-semibold">{t.pos.rxRequiredWarning}</div>
+                    <div className="text-[11px] text-amber-800">
+                      {t.pos.blockedNotice}
+                    </div>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      className="mt-1 h-6 bg-white text-[11px] border-amber-300 hover:bg-amber-100"
+                      onClick={() => {
+                        fetchVerifiedPrescriptions();
+                        setShowAttachRxModal(true);
+                      }}
+                    >
+                      <FileText className="mr-1 h-3 w-3" />
+                      {t.pos.attachPrescription}
+                    </Button>
+                  </div>
+                </div>
+              )}
+
               {cart.length === 0 ? (
                 <div className="py-8 text-center text-xs text-slate-400">
                   {t.pos.emptyCart}
@@ -579,7 +718,14 @@ export function PosTerminal({ medicines, branches = [], branchId }: PosTerminalP
                       className="flex items-center justify-between rounded border border-slate-100 p-2 text-xs"
                     >
                       <div className="space-y-0.5">
-                        <div className="font-medium text-slate-900">{item.medicineName}</div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-medium text-slate-900">{item.medicineName}</span>
+                          {item.isPrescriptionRequired && (
+                            <Badge variant="outline" className="border-red-200 bg-red-50 text-[9px] text-red-700 py-0 px-1">
+                              Rx Required
+                            </Badge>
+                          )}
+                        </div>
                         <div className="font-mono text-[10px] text-slate-400">
                           Lot: {item.batchNumber} | {formatCurrency(item.unitPrice)}/ea
                         </div>
@@ -671,12 +817,21 @@ export function PosTerminal({ medicines, branches = [], branchId }: PosTerminalP
               {/* Checkout Button */}
               <Button
                 type="button"
-                className="w-full bg-[#0F766E] text-white hover:bg-[#115E59]"
-                disabled={cart.length === 0 || isSubmitting || !activeShift}
+                className={`w-full text-white ${
+                  isRxBlocked
+                    ? "bg-slate-400 hover:bg-slate-400 cursor-not-allowed"
+                    : "bg-[#0F766E] hover:bg-[#115E59]"
+                }`}
+                disabled={cart.length === 0 || isSubmitting || !activeShift || isRxBlocked}
                 onClick={handleCheckout}
               >
                 {isSubmitting ? (
                   "Processing Transaction..."
+                ) : isRxBlocked ? (
+                  <>
+                    <Lock className="mr-2 h-4 w-4" />
+                    Attach Verified Rx to Checkout
+                  </>
                 ) : (
                   <>
                     <ShoppingCart className="mr-2 h-4 w-4" />
@@ -867,6 +1022,107 @@ export function PosTerminal({ medicines, branches = [], branchId }: PosTerminalP
                 </Button>
               </div>
             </form>
+          </Card>
+        </div>
+      )}
+
+      {/* ATTACH PRESCRIPTION MODAL */}
+      {showAttachRxModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4">
+          <Card className="w-full max-w-xl shadow-2xl">
+            <CardHeader className="border-b border-slate-100 pb-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-[#0F766E]" />
+                    {t.pos.selectPrescription}
+                  </CardTitle>
+                  <CardDescription className="text-xs text-slate-500">
+                    Only clinically verified prescriptions are eligible for checkout dispensing.
+                  </CardDescription>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                  onClick={() => setShowAttachRxModal(false)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="mt-2">
+                <Input
+                  placeholder="Search by Rx number, patient name, or doctor..."
+                  value={rxSearch}
+                  onChange={(e) => setRxSearch(e.target.value)}
+                  className="h-8 text-xs"
+                />
+              </div>
+            </CardHeader>
+            <CardContent className="max-h-[380px] overflow-y-auto p-4 space-y-2.5">
+              {loadingRx ? (
+                <div className="py-8 text-center text-xs text-slate-400">Loading verified prescriptions...</div>
+              ) : verifiedRxList.length === 0 ? (
+                <div className="py-8 text-center text-xs text-slate-400">
+                  {t.pos.noVerifiedPrescriptions}
+                </div>
+              ) : (
+                verifiedRxList
+                  .filter((rx) => {
+                    const q = rxSearch.toLowerCase();
+                    return (
+                      rx.prescriptionNumber?.toLowerCase().includes(q) ||
+                      rx.patient?.name?.toLowerCase().includes(q) ||
+                      rx.doctor?.name?.toLowerCase().includes(q)
+                    );
+                  })
+                  .map((rx) => {
+                    const isSelected = attachedRx?.id === rx.id;
+                    return (
+                      <div
+                        key={rx.id}
+                        className={`rounded-lg border p-3 text-xs transition-colors flex items-center justify-between ${
+                          isSelected
+                            ? "border-[#0F766E] bg-teal-50/50"
+                            : "border-slate-200 hover:border-slate-300 bg-white"
+                        }`}
+                      >
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 font-mono font-bold text-slate-900">
+                            <span>{rx.prescriptionNumber}</span>
+                            <Badge className="bg-[#0F766E] text-white text-[9px] px-1 py-0">VERIFIED</Badge>
+                          </div>
+                          <div className="text-slate-700">
+                            Patient: <span className="font-semibold text-slate-900">{rx.patient?.name}</span>
+                            {rx.doctor && ` | Prescriber: Dr. ${rx.doctor.name}`}
+                          </div>
+                          {rx.patient?.allergies && (
+                            <div className="text-[11px] text-amber-700 font-medium">
+                              Allergies: {rx.patient.allergies}
+                            </div>
+                          )}
+                          <div className="text-[11px] text-slate-500">
+                            Prescribed Items: {rx.items?.map((i) => i.medicine?.name || "Medication").join(", ") || "Regimen"}
+                          </div>
+                        </div>
+                        <Button
+                          type="button"
+                          size="sm"
+                          className={isSelected ? "bg-[#0F766E] text-white" : ""}
+                          variant={isSelected ? "default" : "outline"}
+                          onClick={() => {
+                            setAttachedRx(rx);
+                            setShowAttachRxModal(false);
+                            setErrorMessage(null);
+                          }}
+                        >
+                          {isSelected ? "Attached" : "Attach Rx"}
+                        </Button>
+                      </div>
+                    );
+                  })
+              )}
+            </CardContent>
           </Card>
         </div>
       )}

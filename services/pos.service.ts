@@ -54,6 +54,66 @@ export class PosService {
 
     const targetBranchId = activeShift.branchId || branchId;
 
+    // 0b. Clinical Validation: Medicines flagged as isPrescriptionRequired CANNOT be sold at POS
+    // unless a valid, VERIFIED Prescription containing the prescribed medicine is attached to the sale.
+    const medicineIds = items.map((i) => i.medicineId);
+    const medicines = await db.medicine.findMany({
+      where: { id: { in: medicineIds } },
+      select: { id: true, name: true, isPrescriptionRequired: true },
+    });
+
+    const rxRequiredMedicines = medicines.filter(
+      (m: { id: string; name: string; isPrescriptionRequired: boolean }) => m.isPrescriptionRequired
+    );
+
+    if (rxRequiredMedicines.length > 0) {
+      if (!prescriptionId) {
+        const requiredNames = rxRequiredMedicines.map((m: { name: string }) => m.name).join(", ");
+        throw new ValidationError(
+          `Clinical Validation Error: Medication(s) [${requiredNames}] require a valid prescription. Please attach a verified prescription to proceed.`
+        );
+      }
+
+      const attachedPrescription = await db.prescription.findFirst({
+        where: { id: prescriptionId, isDeleted: false },
+        include: { items: true },
+      });
+
+      if (!attachedPrescription) {
+        throw new NotFoundError("Prescription", prescriptionId);
+      }
+
+      if (attachedPrescription.status !== PrescriptionStatus.VERIFIED) {
+        throw new ValidationError(
+          `Clinical Safety Violation: Attached prescription (${attachedPrescription.prescriptionNumber}) is in status '${attachedPrescription.status}'. Only prescriptions with status 'VERIFIED' can be dispensed.`
+        );
+      }
+
+      // Verify that the attached prescription contains all prescribed medicines that require an Rx
+      const prescribedMedIds = new Set(
+        attachedPrescription.items.map((pi: { medicineId: string }) => pi.medicineId)
+      );
+      for (const rxMed of rxRequiredMedicines) {
+        if (!prescribedMedIds.has(rxMed.id)) {
+          throw new ValidationError(
+            `Prescription Mismatch: Medication '${rxMed.name}' requires a prescription, but is not included in attached prescription '${attachedPrescription.prescriptionNumber}'.`
+          );
+        }
+      }
+    } else if (prescriptionId) {
+      const attachedPrescription = await db.prescription.findFirst({
+        where: { id: prescriptionId, isDeleted: false },
+      });
+      if (!attachedPrescription) {
+        throw new NotFoundError("Prescription", prescriptionId);
+      }
+      if (attachedPrescription.status !== PrescriptionStatus.VERIFIED) {
+        throw new ValidationError(
+          `Clinical Safety Violation: Attached prescription is in status '${attachedPrescription.status}'. Only 'VERIFIED' prescriptions can be dispensed.`
+        );
+      }
+    }
+
     // 1. Verify stock availability for all items before executing transaction
     for (const item of items) {
       const availableStock = await this.inventoryRepository.getBatchStock(item.batchId, targetBranchId);
@@ -149,11 +209,15 @@ export class PosService {
         });
       }
 
-      // D. If linked to a prescription, mark it dispensed
+      // D. If linked to a prescription, mark it dispensed and link to newly created sale
       if (prescriptionId) {
         await txDb.prescription.update({
           where: { id: prescriptionId },
-          data: { status: PrescriptionStatus.DISPENSED },
+          data: {
+            status: PrescriptionStatus.DISPENSED,
+            saleId: sale.id,
+            updatedBy: userId,
+          },
         });
       }
 

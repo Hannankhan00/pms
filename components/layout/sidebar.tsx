@@ -22,6 +22,7 @@ import {
   BarChart3,
   Settings,
   Pill,
+  Stethoscope,
 } from "lucide-react";
 
 export function Sidebar() {
@@ -35,10 +36,11 @@ export function Sidebar() {
     { label: t.navigation.inventory, href: "/dashboard/inventory", icon: Boxes },
     { label: t.navigation.procurement, href: "/dashboard/procurement", icon: Truck },
     { label: t.navigation.pos, href: "/dashboard/pos", icon: ShoppingCart },
+    { label: t.navigation.prescriptions, href: "/dashboard/prescriptions", icon: FileText },
+    { label: t.navigation.patients, href: "/dashboard/patients", icon: HeartPulse },
+    { label: t.doctors?.title ?? "Doctors & Prescribers", href: "/dashboard/doctors", icon: Stethoscope },
     { label: t.navigation.users, href: "/dashboard/roles", icon: Users },
     { label: t.navigation.staff, href: "/dashboard/staff", icon: UserCheck },
-    { label: t.navigation.prescriptions, href: "#prescriptions", icon: FileText, isPlaceholder: true },
-    { label: t.navigation.patients, href: "#patients", icon: HeartPulse, isPlaceholder: true },
     { label: t.navigation.finance, href: "#finance", icon: CircleDollarSign, isPlaceholder: true },
     { label: t.navigation.compliance, href: "#compliance", icon: ShieldAlert, isPlaceholder: true },
     { label: t.navigation.notifications, href: "#notifications", icon: Bell, isPlaceholder: true },

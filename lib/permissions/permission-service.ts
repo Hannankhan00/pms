@@ -1,7 +1,7 @@
 import { prisma } from "../db/prisma";
 import { AuthorizationError, AuthenticationError, createErrorResponse } from "../errors/app-error";
 import { getTenantContext } from "../tenant/context";
-import { PermissionCode } from "./permissions";
+import { PermissionCode, PERMISSIONS } from "./permissions";
 
 /**
  * Cached or direct lookup for a user's permissions within a specific tenant.
@@ -77,7 +77,9 @@ export async function requirePermission(
 
   const permissions = await getUserPermissions(context.userId, context.tenantId);
 
-  if (!permissions.includes(permissionCode)) {
+  const resolvedCode = (PERMISSIONS as Record<string, string>)[permissionCode] || permissionCode;
+
+  if (!permissions.includes(resolvedCode) && !permissions.includes(permissionCode)) {
     throw new AuthorizationError(`Access denied: Missing required permission '${permissionCode}'`);
   }
 

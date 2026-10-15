@@ -161,6 +161,68 @@ const PERMISSIONS = [
     module: "pos",
     description: "Perform cashier drops, payouts, and shift audits",
   },
+
+  // Clinical & Patients (Phase 3)
+  {
+    code: "patient.view",
+    name: "View Patients",
+    module: "clinical",
+    description: "View patient records and clinical profiles",
+  },
+  {
+    code: "patient.create",
+    name: "Create Patient",
+    module: "clinical",
+    description: "Register new clinical patients",
+  },
+  {
+    code: "patient.manage",
+    name: "Manage Patients",
+    module: "clinical",
+    description: "Modify patient records and medical histories",
+  },
+  {
+    code: "doctor.view",
+    name: "View Doctors",
+    module: "clinical",
+    description: "View prescribing physician registry",
+  },
+  {
+    code: "doctor.create",
+    name: "Create Doctor",
+    module: "clinical",
+    description: "Register verified medical prescribers",
+  },
+  {
+    code: "doctor.manage",
+    name: "Manage Doctors",
+    module: "clinical",
+    description: "Manage physician credentials and licensing",
+  },
+  {
+    code: "prescription.view",
+    name: "View Prescriptions",
+    module: "clinical",
+    description: "View prescription orders and queue",
+  },
+  {
+    code: "prescription.create",
+    name: "Create Prescription",
+    module: "clinical",
+    description: "Register prescription intake orders",
+  },
+  {
+    code: "prescription.verify",
+    name: "Verify Prescription",
+    module: "clinical",
+    description: "Pharmacist authorization and clinical approval",
+  },
+  {
+    code: "prescription.dispense",
+    name: "Dispense Prescription",
+    module: "clinical",
+    description: "Dispense prescribed medications at checkout",
+  },
 ];
 
 async function main() {

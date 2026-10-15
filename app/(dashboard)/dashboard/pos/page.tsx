@@ -27,6 +27,7 @@ export default async function PosPage() {
     id: m.id,
     sku: m.sku,
     name: m.name,
+    isPrescriptionRequired: Boolean(m.isPrescriptionRequired),
     category: m.category,
     batches: (m.batches || []).map((b: any) => ({
       id: b.id,

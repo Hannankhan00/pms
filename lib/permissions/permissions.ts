@@ -37,8 +37,15 @@ export const PERMISSIONS = {
   // Clinical & Patients
   PATIENT_VIEW: "patient.view",
   PATIENT_CREATE: "patient.create",
+  PATIENT_MANAGE: "patient.manage",
+  DOCTOR_VIEW: "doctor.view",
+  DOCTOR_CREATE: "doctor.create",
+  DOCTOR_MANAGE: "doctor.manage",
   PRESCRIPTION_VIEW: "prescription.view",
   PRESCRIPTION_CREATE: "prescription.create",
+  PRESCRIPTION_VERIFY: "prescription.verify",
+  RX_VERIFY: "prescription.verify",
+  PRESCRIPTION_DISPENSE: "prescription.dispense",
 
   // IAM: Roles, Permissions & Staff
   ROLES_VIEW: "roles.view",
