@@ -66,6 +66,10 @@ export const PERMISSIONS = {
   // Reports & Analytics Domain
   REPORTS_VIEW: "reports.view",
   REPORTS_MANAGE: "reports.manage",
+
+  // Compliance & Regulatory Audit Domain
+  AUDIT_VIEW: "audit.view",
+  COMPLIANCE_MANAGE: "compliance.manage",
 } as const;
 
 export type PermissionCode = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];

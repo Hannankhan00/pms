@@ -398,5 +398,28 @@
       "title": "Clinical & Dispensing Analytics",
       "subtitle": "Prescription verification rates, regulated Rx versus OTC sales distribution, and prescriber partnerships"
     }
+  },
+  "compliance": {
+    "title": "Regulatory Compliance & Audit Trail",
+    "subtitle": "Immutable forensic event logging, controlled substance chain of custody, and regulatory permit surveillance",
+    "audit": {
+      "tabTitle": "Forensic Audit Logs",
+      "diffTitle": "Forensic Audit Inspection",
+      "stateChanges": "Field Level Mutation Analysis"
+    },
+    "controlled": {
+      "tabTitle": "Controlled Substances Registry",
+      "registerTitle": "Official Controlled Substance Register",
+      "registerNotice": "Title 21 CFR / Health Authority Compliant"
+    },
+    "licenses": {
+      "tabTitle": "Regulatory Permits & Licenses",
+      "addLicense": "Register License",
+      "licenseType": "Permit Classification",
+      "licenseNumber": "License Number",
+      "issueDate": "Issue Date",
+      "expiryDate": "Expiry Date"
+    }
   }
 }
+

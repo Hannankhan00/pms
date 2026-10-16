@@ -399,5 +399,28 @@
       "title": "Analytique Clinique et Délivrance",
       "subtitle": "Taux de validation des ordonnances, répartition Rx vs Vente Libre et médecins prescripteurs"
     }
+  },
+  "compliance": {
+    "title": "Conformité Réglementaire et Journal d'Audit",
+    "subtitle": "Traçabilité médico-légale immuable, chaîne de possession des stupéfiants et surveillance des licences",
+    "audit": {
+      "tabTitle": "Journaux d'Audit Légaux",
+      "diffTitle": "Inspection et Analyse des Écarts",
+      "stateChanges": "Analyse des Mutations au Niveau des Champs"
+    },
+    "controlled": {
+      "tabTitle": "Registre des Substances Contrôlées",
+      "registerTitle": "Registre Officiel des Stupéfiants",
+      "registerNotice": "Conforme aux normes de santé publique et Title 21 CFR"
+    },
+    "licenses": {
+      "tabTitle": "Permis et Licences d'Exploitation",
+      "addLicense": "Enregistrer une Licence",
+      "licenseType": "Classification du Permis",
+      "licenseNumber": "Numéro de Licence",
+      "issueDate": "Date d'Émission",
+      "expiryDate": "Date d'Expiration"
+    }
   }
 }
+

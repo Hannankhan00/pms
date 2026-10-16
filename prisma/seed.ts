@@ -275,6 +275,20 @@ const PERMISSIONS = [
     module: "reports",
     description: "Export and configure analytics dashboards and operational reports",
   },
+
+  // Compliance & Regulatory Audit (Phase 6)
+  {
+    code: "audit.view",
+    name: "View Audit Logs",
+    module: "compliance",
+    description: "Inspect immutable audit logs, forensic trails, and controlled substance registries",
+  },
+  {
+    code: "compliance.manage",
+    name: "Manage Regulatory Compliance",
+    module: "compliance",
+    description: "Manage pharmacy operating licenses, certifications, and compliance permits",
+  },
 ];
 
 async function main() {

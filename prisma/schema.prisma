@@ -98,6 +98,26 @@ enum ShiftTransactionType {
   ADJUSTMENT
 }
 
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  VERIFY
+  LOGIN
+}
+
+enum LicenseType {
+  OPERATING
+  NARCOTIC_DISPENSING
+  TAX
+}
+
+enum LicenseStatus {
+  ACTIVE
+  EXPIRED
+  SUSPENDED
+}
+
 // ============================================================================
 // GROUP 1: TENANT, IDENTITY & RBAC
 // ============================================================================
@@ -144,6 +164,7 @@ model Tenant {
    auditLogs            AuditLog[]
    shifts               Shift[]
    shiftTransactions    ShiftTransaction[]
+   licenses             PharmacyLicense[]
 
   @@map("tenants")
 }
@@ -491,6 +512,8 @@ model Medicine {
   reorderLevel           Int       @default(10)
   isPrescriptionRequired Boolean   @default(false)
   isNarcotic             Boolean   @default(false)
+  isControlled           Boolean   @default(false)
+  regulatorySchedule     String?   @db.VarChar(50) // e.g. "Schedule II", "Schedule IV"
   isDeleted              Boolean   @default(false)
   deletedAt              DateTime?
   createdAt              DateTime  @default(now())
@@ -521,6 +544,7 @@ model Medicine {
   @@index([dosageFormId])
   @@index([unitId])
   @@index([barcode])
+  @@index([isControlled])
   @@map("medicines")
 }
 
@@ -1078,16 +1102,16 @@ model AccountLedger {
 
 /// AuditLog maintains an immutable forensic trail of mutations across tenant entities.
 model AuditLog {
-  id        String   @id @default(uuid())
-  tenantId  String   @db.VarChar(191)
-  userId    String?  @db.VarChar(191)
-  action    String   @db.VarChar(100) // e.g. "UPDATE_STOCK", "DELETE_SALE", "DISPENSE_PRESCRIPTION"
-  entity    String   @db.VarChar(100) // e.g. "Medicine", "Sale", "InventoryLedger"
-  entityId  String   @db.VarChar(191)
+  id        String      @id @default(uuid())
+  tenantId  String      @db.VarChar(191)
+  userId    String?     @db.VarChar(191)
+  action    AuditAction @default(UPDATE)
+  entity    String      @db.VarChar(100) // e.g. "Medicine", "Sale", "InventoryLedger"
+  entityId  String      @db.VarChar(191)
   oldValues Json?
   newValues Json?
-  ipAddress String?  @db.VarChar(50)
-  createdAt DateTime @default(now())
+  ipAddress String?     @db.VarChar(50)
+  createdAt DateTime    @default(now())
 
   tenant Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   user   PharmacyUser? @relation(fields: [userId], references: [id], onDelete: SetNull)
@@ -1097,7 +1121,33 @@ model AuditLog {
   @@index([entity, entityId])
   @@index([action])
   @@index([createdAt])
+  @@index([tenantId, entity, entityId])
+  @@index([tenantId, createdAt])
   @@map("audit_logs")
+}
+
+/// PharmacyLicense tracks official regulatory licenses, narcotic permits, and certifications.
+model PharmacyLicense {
+  id            String        @id @default(uuid())
+  tenantId      String        @db.VarChar(191)
+  licenseType   LicenseType
+  licenseNumber String        @db.VarChar(100)
+  issueDate     DateTime
+  expiryDate    DateTime
+  status        LicenseStatus @default(ACTIVE)
+  documentUrl   String?       @db.VarChar(255)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  createdBy     String?       @db.VarChar(191)
+  updatedBy     String?       @db.VarChar(191)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, licenseType, licenseNumber])
+  @@index([tenantId])
+  @@index([expiryDate])
+  @@index([status])
+  @@map("pharmacy_licenses")
 }
 
 // ============================================================================

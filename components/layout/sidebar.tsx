@@ -49,8 +49,7 @@ export function Sidebar() {
     { label: t.finance?.title ?? "Financial Intelligence", href: "/dashboard/finance", icon: TrendingUp },
     { label: t.reports?.title ?? "Reports & Analytics", href: "/dashboard/reports", icon: BarChart3 },
     { label: t.navigation.users, href: "/dashboard/roles", icon: Users },
-    { label: t.navigation.staff, href: "/dashboard/staff", icon: UserCheck },
-    { label: t.navigation.compliance, href: "#compliance", icon: ShieldAlert, isPlaceholder: true },
+    { label: t.navigation.compliance, href: "/dashboard/compliance", icon: ShieldAlert },
     { label: t.navigation.notifications, href: "#notifications", icon: Bell, isPlaceholder: true },
     { label: t.navigation.settings, href: "#system", icon: Settings, isPlaceholder: true },
   ];

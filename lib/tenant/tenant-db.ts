@@ -239,6 +239,7 @@ export interface TenantDb {
   customerPaymentLink: any;
   accountLedger: any;
   auditLog: any;
+  pharmacyLicense: any;
 
   transaction: <T>(fn: (txDb: TenantDb) => Promise<T>) => Promise<T>;
 }
@@ -348,6 +349,7 @@ export function tenantDb(tenantId: string, client: DatabaseClient = prisma): Ten
     customerPaymentLink: createTenantModelDelegate(c.customerPaymentLink, tenantId),
     accountLedger: createTenantModelDelegate(c.accountLedger, tenantId),
     auditLog: createTenantModelDelegate(c.auditLog, tenantId),
+    pharmacyLicense: createTenantModelDelegate(c.pharmacyLicense, tenantId),
 
     /**
      * Runs operations in a database transaction with tenant scope preserved.

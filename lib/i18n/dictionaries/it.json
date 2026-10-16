@@ -398,5 +398,28 @@
       "title": "Analisi Clinica e Dispensazione",
       "subtitle": "Tasso di verifica ricette, ripartizione tra farmaci con ricetta e da banco, e medici prescrittori"
     }
+  },
+  "compliance": {
+    "title": "Conformità Normativa e Registro di Audit",
+    "subtitle": "Tracciabilità forense immutabile, catena di custodia dei farmaci controllati e controllo delle licenze",
+    "audit": {
+      "tabTitle": "Registri di Audit Forense",
+      "diffTitle": "Ispezione e Analisi delle Modifiche",
+      "stateChanges": "Analisi delle Variazioni a Livello di Campo"
+    },
+    "controlled": {
+      "tabTitle": "Registro Sostanze Controllate",
+      "registerTitle": "Registro Ufficiale degli Stupefacenti",
+      "registerNotice": "Conforme agli standard del Ministero della Salute e normative farmaceutiche"
+    },
+    "licenses": {
+      "tabTitle": "Permessi e Licenze Sanitarie",
+      "addLicense": "Registra Licenza",
+      "licenseType": "Classificazione Permesso",
+      "licenseNumber": "Numero di Licenza",
+      "issueDate": "Data di Rilascio",
+      "expiryDate": "Data di Scadenza"
+    }
   }
 }
+
