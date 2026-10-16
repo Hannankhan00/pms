@@ -8,6 +8,8 @@ import { Building2, Plus, Phone, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getDictionary } from "@/lib/i18n";
 
+import { AddBranchDialog } from "@/components/branches/add-branch-dialog";
+
 export const dynamic = "force-dynamic";
 
 export default async function BranchesPage() {
@@ -31,10 +33,7 @@ export default async function BranchesPage() {
           </p>
         </div>
 
-        <Button className="gap-2" disabled title="Phase 1 Creation UI">
-          <Plus className="h-4 w-4" />
-          {t.branches.addBranch}
-        </Button>
+        <AddBranchDialog buttonLabel={t.branches.addBranch} />
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

@@ -17,7 +17,7 @@ export class PosService {
     this.inventoryRepository = new InventoryRepository(tenantId);
   }
 
-  async processSale(userId: string, input: unknown) {
+  async processSale(userId: string, input: unknown): Promise<any> {
     await requirePermission(userId, this.tenantId, PERMISSIONS.POS_ACCESS);
     await requirePermission(userId, this.tenantId, PERMISSIONS.SALES_CREATE);
 
@@ -142,59 +142,87 @@ export class PosService {
     // 4. Generate unique receipt number
     const receiptNumber = `REC-${Date.now().toString().slice(-6)}-${Math.floor(1000 + Math.random() * 9000)}`;
 
-    return db.transaction(async (txDb) => {
-      // A. Create Sale header linked to active shift
-      const sale = await txDb.sale.create({
-        data: {
-          branchId: targetBranchId,
-          shiftId: activeShift.id,
-          customerId,
-          userId,
-          prescriptionId,
-          receiptNumber,
-          subtotal: new Prisma.Decimal(subtotal.toString()),
-          discount: new Prisma.Decimal(discount.toString()),
-          tax: new Prisma.Decimal(tax.toString()),
-          totalAmount: new Prisma.Decimal(totalAmount.toString()),
-          status: SaleStatus.COMPLETED,
-          notes,
-          createdBy: userId,
-        },
-      });
+    return db.transaction(
+      async (txDb) => {
+        // A. Concurrency Safety: Lock batch rows and re-verify balance inside serializable transaction
+        for (const item of items) {
+          // 1. Acquire exclusive lock on the batch record to prevent simultaneous checkouts from interleaving
+          await txDb.medicineBatch.update({
+            where: { id: item.batchId },
+            data: { updatedAt: new Date() },
+          });
 
-      // B. Process items and deduct inventory ledger
-      for (const item of items) {
-        const itemSubtotal = item.quantity * item.unitPrice - item.discount + item.tax;
+          // 2. Re-verify real-time inventory balance under exclusive lock
+          const stockAggregate = await txDb.inventoryLedger.aggregate({
+            where: {
+              batchId: item.batchId,
+              ...(targetBranchId ? { branchId: targetBranchId } : {}),
+            },
+            _sum: {
+              quantity: true,
+            },
+          });
 
-        // Create SaleItem
-        await txDb.saleItem.create({
+          const currentStock = Number(stockAggregate._sum.quantity || 0);
+          if (currentStock < item.quantity) {
+            throw new ValidationError(
+              `Concurrency Conflict: Batch '${item.batchId}' balance changed. Requested ${item.quantity}, but only ${currentStock} units remain in stock.`
+            );
+          }
+        }
+
+        // B. Create Sale header linked to active shift
+        const sale = await txDb.sale.create({
           data: {
-            saleId: sale.id,
-            medicineId: item.medicineId,
-            batchId: item.batchId,
-            quantity: item.quantity,
-            unitPrice: new Prisma.Decimal(item.unitPrice.toString()),
-            discount: new Prisma.Decimal(item.discount.toString()),
-            tax: new Prisma.Decimal(item.tax.toString()),
-            subtotal: new Prisma.Decimal(itemSubtotal.toString()),
-          },
-        });
-
-        // Deduct from InventoryLedger (negative quantity)
-        await txDb.inventoryLedger.create({
-          data: {
-            medicineId: item.medicineId,
-            batchId: item.batchId,
-            branchId,
-            transactionType: InventoryTransactionType.SALE,
-            quantity: new Prisma.Decimal((-item.quantity).toString()), // Negative for outflow
-            referenceId: sale.id,
-            referenceType: "Sale",
-            notes: `POS Dispense Receipt: ${receiptNumber}`,
+            branchId: targetBranchId,
+            shiftId: activeShift.id,
+            customerId,
+            userId,
+            prescriptionId,
+            receiptNumber,
+            subtotal: new Prisma.Decimal(subtotal.toString()),
+            discount: new Prisma.Decimal(discount.toString()),
+            tax: new Prisma.Decimal(tax.toString()),
+            totalAmount: new Prisma.Decimal(totalAmount.toString()),
+            status: SaleStatus.COMPLETED,
+            notes,
             createdBy: userId,
           },
         });
-      }
+
+        // C. Process items and deduct inventory ledger
+        for (const item of items) {
+          const itemSubtotal = item.quantity * item.unitPrice - item.discount + item.tax;
+
+          // Create SaleItem
+          await txDb.saleItem.create({
+            data: {
+              saleId: sale.id,
+              medicineId: item.medicineId,
+              batchId: item.batchId,
+              quantity: item.quantity,
+              unitPrice: new Prisma.Decimal(item.unitPrice.toString()),
+              discount: new Prisma.Decimal(item.discount.toString()),
+              tax: new Prisma.Decimal(item.tax.toString()),
+              subtotal: new Prisma.Decimal(itemSubtotal.toString()),
+            },
+          });
+
+          // Deduct from InventoryLedger (negative quantity)
+          await txDb.inventoryLedger.create({
+            data: {
+              medicineId: item.medicineId,
+              batchId: item.batchId,
+              branchId: targetBranchId,
+              transactionType: InventoryTransactionType.SALE,
+              quantity: new Prisma.Decimal((-item.quantity).toString()), // Negative for outflow
+              referenceId: sale.id,
+              referenceType: "Sale",
+              notes: `POS Dispense Receipt: ${receiptNumber}`,
+              createdBy: userId,
+            },
+          });
+        }
 
       // C. Process payments
       for (const payment of payments) {
@@ -222,7 +250,8 @@ export class PosService {
       }
 
       return sale;
-    });
+    },
+    { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
   }
 
   async getSale(id: string) {

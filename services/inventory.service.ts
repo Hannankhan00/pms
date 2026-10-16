@@ -1,8 +1,9 @@
 import { InventoryRepository, CreateLedgerEntryInput } from "../repositories/inventory.repository";
 import { StockAdjustmentSchema, StockAdjustmentInput } from "../validations/inventory.schema";
-import { InventoryTransactionType } from "@prisma/client";
+import { InventoryTransactionType, Prisma } from "@prisma/client";
 import { ValidationError, NotFoundError } from "../lib/errors/app-error";
 import { requirePermission, PERMISSIONS } from "../lib/permissions/permission-service";
+import { tenantDb } from "../lib/tenant/tenant-db";
 
 export class InventoryService {
   private readonly repository: InventoryRepository;
@@ -31,26 +32,43 @@ export class InventoryService {
 
     const { medicineId, batchId, branchId, warehouseId, quantity, notes } = parsed.data;
 
-    // Check that negative adjustment doesn't exceed current stock
-    if (quantity < 0) {
-      const currentStock = await this.repository.getBatchStock(batchId, branchId);
-      if (currentStock + quantity < 0) {
-        throw new ValidationError(
-          `Cannot reduce stock by ${Math.abs(quantity)}. Only ${currentStock} available in this batch.`
-        );
-      }
-    }
+    const db = tenantDb(this.tenantId);
+    return db.transaction(
+      async (txDb) => {
+        // Concurrency Guard: Intra-transaction balance re-verification under serializable isolation
+        if (quantity < 0) {
+          const stockAggregate = await txDb.inventoryLedger.aggregate({
+            where: {
+              batchId,
+              ...(branchId ? { branchId } : {}),
+            },
+            _sum: {
+              quantity: true,
+            },
+          });
+          const currentStock = Number(stockAggregate._sum.quantity || 0);
+          if (currentStock + quantity < 0) {
+            throw new ValidationError(
+              `Concurrency Safety Violation: Cannot reduce stock by ${Math.abs(quantity)}. Only ${currentStock} available in this batch.`
+            );
+          }
+        }
 
-    return this.repository.createLedgerEntry({
-      medicineId,
-      batchId,
-      branchId,
-      warehouseId,
-      transactionType: InventoryTransactionType.ADJUSTMENT,
-      quantity,
-      notes,
-      createdBy: userId,
-    });
+        return txDb.inventoryLedger.create({
+          data: {
+            medicineId,
+            batchId,
+            branchId,
+            warehouseId,
+            transactionType: InventoryTransactionType.ADJUSTMENT,
+            quantity: new Prisma.Decimal(quantity.toString()),
+            notes,
+            createdBy: userId,
+          },
+        });
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
+    );
   }
 
   async getBatchBalance(batchId: string, branchId?: string) {

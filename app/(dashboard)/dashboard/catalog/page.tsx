@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import { getDictionary } from "@/lib/i18n";
 
+import { AddMedicineDialog } from "@/components/catalog/add-medicine-dialog";
+
 export const dynamic = "force-dynamic";
 
 export default async function CatalogPage({
@@ -55,10 +57,7 @@ export default async function CatalogPage({
         </div>
 
         <div className="flex items-center gap-2">
-          <Button className="gap-2">
-            <Plus className="h-4 w-4" />
-            {t.catalog.addMedicine}
-          </Button>
+          <AddMedicineDialog buttonLabel={t.catalog.addMedicine} />
         </div>
       </div>
 

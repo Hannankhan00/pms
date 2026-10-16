@@ -1,0 +1,97 @@
+name: Production CI/CD Deployment Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  validate-and-test:
+    name: Validation & Regression Testing
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: test
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      HUB_INTERNAL_API_KEY: ${{ secrets.HUB_INTERNAL_API_KEY }}
+      HUB_SSO_SECRET: ${{ secrets.HUB_SSO_SECRET }}
+      NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL || 'https://pms.example.com' }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Production Dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Static Typecheck
+        run: npm run typecheck
+
+      - name: Execute Full Regression Test Suite
+        run: npm run test:all
+
+  migrate-and-deploy:
+    name: Zero-Downtime Migration & Deployment
+    needs: validate-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Run Safe Database Migrations (Zero Downtime)
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+        run: |
+          # Strictly execute forward-compatible migrations (NEVER db push in production)
+          npx prisma migrate deploy
+
+      - name: Build Next.js Production Bundle
+        env:
+          NODE_ENV: production
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+          HUB_INTERNAL_API_KEY: ${{ secrets.HUB_INTERNAL_API_KEY }}
+          HUB_SSO_SECRET: ${{ secrets.HUB_SSO_SECRET }}
+          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+        run: npm run build
+
+      - name: Deploy to CloudPanel VPS via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            cd htdocs/pharmacy-pms
+            git pull origin main
+            npm ci --production=false
+            npx prisma generate
+            npx prisma migrate deploy
+            npm run build
+            pm2 reload pms || pm2 start npm --name "pms" -- start

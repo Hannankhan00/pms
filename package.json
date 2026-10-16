@@ -21,7 +21,9 @@
     "test:phase5": "tsx tests/phase5.test.ts",
     "test:phase6": "tsx tests/phase6.test.ts",
     "test:phase7": "tsx tests/phase7.test.ts",
-    "test:phase8": "tsx tests/phase8.test.ts"
+    "test:phase8": "tsx tests/phase8.test.ts",
+    "test:readiness": "tsx tests/phase21-22.test.ts",
+    "test:all": "tsx tests/run-all.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

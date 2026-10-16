@@ -280,7 +280,14 @@ export interface TenantDb {
   notification: any;
   dataImportJob: any;
 
-  transaction: <T>(fn: (txDb: TenantDb) => Promise<T>) => Promise<T>;
+  transaction: <T>(
+    fn: (txDb: TenantDb) => Promise<T>,
+    options?: {
+      isolationLevel?: Prisma.TransactionIsolationLevel;
+      maxWait?: number;
+      timeout?: number;
+    }
+  ) => Promise<T>;
 }
 
 /**
@@ -396,12 +403,20 @@ export function tenantDb(tenantId: string, client: DatabaseClient = prisma): Ten
 
     /**
      * Runs operations in a database transaction with tenant scope preserved.
+     * Supports isolation levels (e.g. Serializable) to strictly prevent race conditions.
      */
-    transaction: async <T>(fn: (txDb: TenantDb) => Promise<T>): Promise<T> => {
+    transaction: async <T>(
+      fn: (txDb: TenantDb) => Promise<T>,
+      options?: {
+        isolationLevel?: Prisma.TransactionIsolationLevel;
+        maxWait?: number;
+        timeout?: number;
+      }
+    ): Promise<T> => {
       if ("$transaction" in client && typeof (client as PrismaClient).$transaction === "function") {
         return (client as PrismaClient).$transaction(async (tx) => {
           return fn(tenantDb(tenantId, tx));
-        });
+        }, options);
       }
       return fn(tenantDb(tenantId, client));
     },

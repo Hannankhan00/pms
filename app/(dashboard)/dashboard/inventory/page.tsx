@@ -17,6 +17,10 @@ import {
 import { getDictionary } from "@/lib/i18n";
 import { InventoryTransactionType } from "@prisma/client";
 
+import { CatalogService } from "@/services/catalog.service";
+import { BranchService } from "@/services/branch.service";
+import { AdjustStockDialog } from "@/components/inventory/adjust-stock-dialog";
+
 export const dynamic = "force-dynamic";
 
 export default async function InventoryPage({
@@ -33,10 +37,34 @@ export default async function InventoryPage({
 
   const context = await getTenantContext();
   const inventoryService = new InventoryService(context.tenantId);
-  const { items: ledgerEntries, total: totalLedger } = await inventoryService.listLedger({
-    transactionType: transactionType || undefined,
-    limit: 100,
-  });
+  const catalogService = new CatalogService(context.tenantId);
+  const branchService = new BranchService(context.tenantId);
+
+  const [{ items: ledgerEntries }, { items: rawMedicines }, rawBranches] = await Promise.all([
+    inventoryService.listLedger({
+      transactionType: transactionType || undefined,
+      limit: 100,
+    }),
+    catalogService.listMedicines({ limit: 100 }),
+    branchService.listBranches(),
+  ]);
+
+  const medicines = rawMedicines.map((m: any) => ({
+    id: m.id,
+    sku: m.sku,
+    name: m.name,
+    batches: (m.batches || []).map((b: any) => ({
+      id: b.id,
+      batchNumber: b.batchNumber,
+      sellingPrice: Number(b.sellingPrice),
+    })),
+  }));
+
+  const branches = rawBranches.map((b: any) => ({
+    id: b.id,
+    code: b.code,
+    name: b.name,
+  }));
 
   const purchaseCount = ledgerEntries.filter(
     (e: any) => e.transactionType === InventoryTransactionType.PURCHASE
@@ -61,10 +89,11 @@ export default async function InventoryPage({
           </p>
         </div>
 
-        <Button className="gap-2">
-          <Scale className="h-4 w-4" />
-          {t.inventory.adjustStock}
-        </Button>
+        <AdjustStockDialog
+          buttonLabel={t.inventory.adjustStock}
+          medicines={medicines}
+          branches={branches}
+        />
       </div>
 
       {/* KPI Overview */}

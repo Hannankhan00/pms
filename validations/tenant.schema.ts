@@ -22,8 +22,10 @@ export const provisionTenantSchema = z.object({
   adminName: z.string().trim().min(1, "Admin name is required"),
 });
 
+import { sanitizedOptionalString } from "@/lib/security/sanitize";
+
 export const tenantSettingsSchema = z.object({
-  receiptHeader: z.string().max(1000).optional().nullable(),
+  receiptHeader: sanitizedOptionalString(1000),
   taxId: z.string().max(100).optional().nullable(),
   defaultCurrency: z.string().min(1).max(10).optional(),
 });

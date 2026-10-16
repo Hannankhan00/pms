@@ -16,6 +16,10 @@ import {
 import { getDictionary } from "@/lib/i18n";
 import { formatMoney, CurrencyCode } from "@/lib/currency/currency";
 
+import { CatalogService } from "@/services/catalog.service";
+import { BranchService } from "@/services/branch.service";
+import { NewPurchaseDialog } from "@/components/procurement/new-purchase-dialog";
+
 export const dynamic = "force-dynamic";
 
 export default async function ProcurementPage() {
@@ -26,9 +30,38 @@ export default async function ProcurementPage() {
 
   const context = await getTenantContext();
   const procurementService = new ProcurementService(context.tenantId);
-  const { items: purchases, total: totalPurchases } = await procurementService.listPurchases({
-    limit: 50,
-  });
+  const catalogService = new CatalogService(context.tenantId);
+  const branchService = new BranchService(context.tenantId);
+
+  const [
+    { items: purchases },
+    suppliers,
+    { items: rawMedicines },
+    rawBranches,
+  ] = await Promise.all([
+    procurementService.listPurchases({ limit: 50 }),
+    procurementService.listSuppliers(),
+    catalogService.listMedicines({ limit: 100 }),
+    branchService.listBranches(),
+  ]);
+
+  const medicines = rawMedicines.map((m: any) => ({
+    id: m.id,
+    sku: m.sku,
+    name: m.name,
+  }));
+
+  const branches = rawBranches.map((b: any) => ({
+    id: b.id,
+    code: b.code,
+    name: b.name,
+  }));
+
+  const suppliersList = suppliers.map((s: any) => ({
+    id: s.id,
+    name: s.name,
+    contactPerson: s.contactPerson,
+  }));
 
   const totalInvoiced = purchases.reduce(
     (acc: number, p: any) => acc + Number(p.totalAmount),
@@ -48,10 +81,12 @@ export default async function ProcurementPage() {
           </p>
         </div>
 
-        <Button className="gap-2">
-          <Plus className="h-4 w-4" />
-          {t.procurement.newPurchase}
-        </Button>
+        <NewPurchaseDialog
+          buttonLabel={t.procurement.newPurchase}
+          suppliers={suppliersList}
+          medicines={medicines}
+          branches={branches}
+        />
       </div>
 
       {/* KPI Overview */}

@@ -33,6 +33,8 @@ export const PaymentInputSchema = z.object({
   referenceNumber: z.string().max(100).optional(),
 });
 
+import { sanitizedOptionalString } from "@/lib/security/sanitize";
+
 export const CreateSaleSchema = z.object({
   branchId: z.string().uuid("Invalid branch ID"),
   customerId: z.string().uuid().optional(),
@@ -41,7 +43,7 @@ export const CreateSaleSchema = z.object({
   payments: z.array(PaymentInputSchema).min(1, "At least one payment method is required"),
   discount: z.number().min(0).default(0),
   tax: z.number().min(0).default(0),
-  notes: z.string().max(255).optional(),
+  notes: sanitizedOptionalString(255),
 });
 
 export const PrescriptionItemInputSchema = z.object({
@@ -50,7 +52,7 @@ export const PrescriptionItemInputSchema = z.object({
   frequency: z.string().min(1, "Frequency is required").max(100),
   duration: z.string().min(1, "Duration is required").max(100),
   quantity: z.number().int().positive("Prescribed quantity must be positive"),
-  instructions: z.string().max(255).optional(),
+  instructions: sanitizedOptionalString(255),
 });
 
 export const CreatePrescriptionSchema = z.object({
