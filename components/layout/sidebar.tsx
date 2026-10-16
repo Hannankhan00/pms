@@ -27,13 +27,21 @@ import {
   TrendingUp,
   Pill,
   Stethoscope,
+  Database,
 } from "lucide-react";
+
+interface NavItem {
+  label: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  isPlaceholder?: boolean;
+}
 
 export function Sidebar() {
   const pathname = usePathname();
   const { t, isRtl } = useI18n();
 
-  const NAV_ITEMS = [
+  const NAV_ITEMS: NavItem[] = [
     { label: t.navigation.dashboard, href: "/dashboard", icon: LayoutDashboard },
     { label: t.navigation.branches, href: "/dashboard/branches", icon: Building2 },
     { label: t.navigation.products, href: "/dashboard/catalog", icon: Package },
@@ -50,8 +58,9 @@ export function Sidebar() {
     { label: t.reports?.title ?? "Reports & Analytics", href: "/dashboard/reports", icon: BarChart3 },
     { label: t.navigation.users, href: "/dashboard/roles", icon: Users },
     { label: t.navigation.compliance, href: "/dashboard/compliance", icon: ShieldAlert },
-    { label: t.navigation.notifications, href: "#notifications", icon: Bell, isPlaceholder: true },
-    { label: t.navigation.settings, href: "#system", icon: Settings, isPlaceholder: true },
+    { label: t.navigation.notifications, href: "/dashboard/notifications", icon: Bell },
+    { label: t.navigation.migration ?? "Data Migration", href: "/dashboard/migration", icon: Database },
+    { label: t.navigation.settings ?? "Settings", href: "/dashboard/settings", icon: Settings },
   ];
 
   return (

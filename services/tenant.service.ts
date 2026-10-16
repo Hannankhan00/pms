@@ -26,4 +26,15 @@ export class TenantService {
 
     return tenant;
   }
+
+  /**
+   * Updates localized tenant settings (receipt branding, tax ID, and default currency).
+   */
+  async updateSettings(
+    tenantId: string,
+    data: { receiptHeader?: string | null; taxId?: string | null; defaultCurrency?: string }
+  ) {
+    await this.getTenant(tenantId);
+    return this.repository.updateSettings(tenantId, data);
+  }
 }

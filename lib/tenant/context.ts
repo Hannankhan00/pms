@@ -42,10 +42,23 @@ export async function getTenantContext(overrides?: ContextOverrides): Promise<Te
     );
   }
 
-  // Development / Test Mock Resolution
-  const tenantId = overrides?.tenantId || DEV_TENANT.id;
-  const userId = overrides?.userId || DEV_USER.id;
-  const hubUserId = overrides?.hubUserId || DEV_USER.hubUserId;
+  // Development / Test Mock Resolution or Cookie Session Resolution
+  let sessionData: { tenantId?: string; userId?: string; hubUserId?: string } | null = null;
+  try {
+    const { cookies } = await import("next/headers");
+    const cookieStore = await cookies();
+    const sessionCookie = cookieStore.get("pms_session")?.value;
+    if (sessionCookie) {
+      const { verifySpokeSessionToken } = await import("../auth/sso-verifier");
+      sessionData = await verifySpokeSessionToken(sessionCookie);
+    }
+  } catch {
+    // Outside request context or invalid session cookie
+  }
+
+  const tenantId = overrides?.tenantId || sessionData?.tenantId || DEV_TENANT.id;
+  const userId = overrides?.userId || sessionData?.userId || DEV_USER.id;
+  const hubUserId = overrides?.hubUserId || sessionData?.hubUserId || DEV_USER.hubUserId;
   const branchId = overrides?.branchId || DEV_BRANCH.id;
 
   if (!tenantId || !userId) {
@@ -57,7 +70,7 @@ export async function getTenantContext(overrides?: ContextOverrides): Promise<Te
     userId,
     hubUserId,
     branchId,
-    isMock: !overrides?.tenantId,
+    isMock: !overrides?.tenantId && !sessionData?.tenantId,
   };
 }
 

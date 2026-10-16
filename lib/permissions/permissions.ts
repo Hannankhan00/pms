@@ -70,6 +70,11 @@ export const PERMISSIONS = {
   // Compliance & Regulatory Audit Domain
   AUDIT_VIEW: "audit.view",
   COMPLIANCE_MANAGE: "compliance.manage",
+
+  // System Administration & Data Migration (Phase 7)
+  SYSTEM_MANAGE: "system.manage",
+  NOTIFICATION_VIEW: "notification.view",
+  NOTIFICATION_MANAGE: "notification.manage",
 } as const;
 
 export type PermissionCode = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];

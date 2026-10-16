@@ -118,6 +118,32 @@ enum LicenseStatus {
   SUSPENDED
 }
 
+enum NotificationType {
+  SYSTEM
+  LOW_STOCK
+  EXPIRY_WARNING
+  COMPLIANCE
+}
+
+enum ImportEntity {
+  MEDICINE
+  SUPPLIER
+  CUSTOMER
+}
+
+enum ImportStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+}
+
 // ============================================================================
 // GROUP 1: TENANT, IDENTITY & RBAC
 // ============================================================================
@@ -125,13 +151,18 @@ enum LicenseStatus {
 /// Tenant represents an independent pharmacy organization.
 /// The Central Hub will eventually own master billing and provisioning.
 model Tenant {
-  id            String       @id @default(uuid())
-  name          String       @db.VarChar(191)
-  slug          String       @unique @db.VarChar(191)
-  status        TenantStatus @default(ACTIVE)
-  defaultLocale String       @default("en") @db.VarChar(10)
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  id                 String             @id @default(uuid())
+  hubTenantId        String?            @unique @db.VarChar(191)
+  name               String             @db.VarChar(191)
+  slug               String             @unique @db.VarChar(191)
+  status             TenantStatus       @default(ACTIVE)
+  subscriptionStatus SubscriptionStatus @default(ACTIVE)
+  receiptHeader      String?            @db.Text
+  taxId              String?            @db.VarChar(100)
+  defaultCurrency    String             @default("USD") @db.VarChar(10)
+  defaultLocale      String             @default("en") @db.VarChar(10)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
 
   // Tenant Scoped Relations
   users             PharmacyUser[]
@@ -165,6 +196,8 @@ model Tenant {
    shifts               Shift[]
    shiftTransactions    ShiftTransaction[]
    licenses             PharmacyLicense[]
+   notifications        Notification[]
+   dataImportJobs       DataImportJob[]
 
   @@map("tenants")
 }
@@ -243,6 +276,7 @@ model PharmacyUser {
   verifiedPrescriptions Prescription[] @relation("VerifiedPrescriptions")
   recordedExpenses      Expense[]      @relation("RecordedExpenses")
   recordedPayments      Payment[]      @relation("RecordedPayments")
+  notifications         Notification[]
 
   @@unique([tenantId, email])
   @@unique([tenantId, hubUserId])
@@ -510,6 +544,8 @@ model Medicine {
   unitId                 String?   @db.VarChar(191)
   strength               String?   @db.VarChar(50)
   reorderLevel           Int       @default(10)
+  minStockLevel          Int       @default(10)
+  maxStockLevel          Int       @default(1000)
   isPrescriptionRequired Boolean   @default(false)
   isNarcotic             Boolean   @default(false)
   isControlled           Boolean   @default(false)
@@ -1205,4 +1241,51 @@ model ShiftTransaction {
   @@index([shiftId])
   @@index([type])
   @@map("shift_transactions")
+}
+
+// ============================================================================
+// GROUP 12: NOTIFICATIONS & ASYNCHRONOUS DATA MIGRATIONS (PHASE 7)
+// ============================================================================
+
+/// In-app notification for critical system, inventory threshold, and regulatory alerts.
+model Notification {
+  id          String           @id @default(uuid())
+  tenantId    String           @db.VarChar(191)
+  userId      String?          @db.VarChar(191)
+  type        NotificationType
+  title       String           @db.VarChar(191)
+  message     String           @db.Text
+  isRead      Boolean          @default(false)
+  referenceId String?          @db.VarChar(191)
+  createdAt   DateTime         @default(now())
+
+  tenant Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   PharmacyUser? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, userId, isRead])
+  @@index([tenantId, createdAt])
+  @@index([tenantId, type])
+  @@map("notifications")
+}
+
+/// Asynchronous bulk data import job tracking onboarding lifecycle and row-level audits.
+model DataImportJob {
+  id          String       @id @default(uuid())
+  tenantId    String       @db.VarChar(191)
+  entity      ImportEntity
+  status      ImportStatus @default(PENDING)
+  totalRows   Int          @default(0)
+  successRows Int          @default(0)
+  failedRows  Int          @default(0)
+  errorLog    Json?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  createdBy   String       @db.VarChar(191)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, entity])
+  @@index([tenantId, status])
+  @@index([tenantId, createdAt])
+  @@map("data_import_jobs")
 }

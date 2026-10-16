@@ -18,6 +18,7 @@
     "staff": "Staff Management",
     "compliance": "Compliance & Regulatory",
     "notifications": "Notifications",
+    "migration": "Data Migration",
     "reports": "Reports & Analytics",
     "settings": "System Settings",
     "activeTenant": "Active Tenant",
@@ -420,6 +421,68 @@
       "issueDate": "Issue Date",
       "expiryDate": "Expiry Date"
     }
+  },
+  "notifications": {
+    "title": "Notifications & Alerts",
+    "subtitle": "Real-time operational alerts, inventory threshold notifications, and compliance monitoring",
+    "all": "All Alerts",
+    "unread": "Unread",
+    "markRead": "Mark read",
+    "markAllRead": "Mark All as Read",
+    "noNotifications": "No notifications found",
+    "viewAll": "View all notifications",
+    "lowStock": "Low Stock",
+    "compliance": "Compliance",
+    "expiryWarning": "Expiry Alert",
+    "system": "System Alert"
+  },
+  "migration": {
+    "title": "Data Migration & Bulk Import",
+    "subtitle": "Idempotent bulk onboarding and standardized data extraction across catalog, suppliers, and customer entities",
+    "targetEntity": "Target Entity",
+    "uploadFile": "Upload Migration File",
+    "downloadTemplate": "Download Template",
+    "execute": "Execute Idempotent Import",
+    "importSummary": "Import Summary",
+    "totalRows": "Total Rows",
+    "successRows": "Success",
+    "failedRows": "Failed",
+    "history": "Migration History"
+  },
+  "settings": {
+    "title": "Pharmacy Settings & Branding",
+    "subtitle": "Manage localized receipt configuration, tax identification, and Hub subscription state",
+    "subscriptionSectionTitle": "SaaS Hub Subscription",
+    "subscriptionSectionSubtitle": "Centralized billing and subscription tier managed by SaaS Hub",
+    "hubTenantId": "Hub Tenant Identifier",
+    "subscriptionStatus": "Subscription Status",
+    "statusActive": "Active",
+    "statusPastDue": "Past Due",
+    "statusCancelled": "Cancelled",
+    "billingPortal": "Manage in Hub Billing Portal",
+    "brandingSectionTitle": "Receipt & Tax Configuration",
+    "brandingSectionSubtitle": "Customize receipt headers, official tax identifiers, and reporting currency",
+    "receiptHeader": "Receipt Header Text",
+    "receiptHeaderPlaceholder": "e.g., Downtown Pharmacy Clinic - Branch #1 - Tel: +1 555-0199",
+    "receiptHeaderHelp": "Printed at the top of POS thermal receipts and invoice documents",
+    "taxId": "Tax ID / VAT Registration",
+    "taxIdPlaceholder": "e.g., VAT-984729103",
+    "defaultCurrency": "Default Operating Currency",
+    "saveSettings": "Save Pharmacy Settings",
+    "saving": "Saving...",
+    "savedSuccess": "Settings updated successfully",
+    "saveError": "Failed to update settings",
+    "unauthorizedNotice": "Access restricted to OWNER and SYSTEM_MANAGE administrators"
+  },
+  "suspended": {
+    "title": "Account Suspended: Payment Required",
+    "subtitle": "The SaaS subscription for this pharmacy spoke is past due or inactive.",
+    "badge": "Subscription Inactive",
+    "explanation": "Your organization's subscription has been marked as PAST DUE or CANCELLED by the Central Hub. Access to write operations, POS sales, and inventory changes is locked until payment is reconciled.",
+    "safeDataNotice": "All patient and pharmacy data remains intact and secure. Read-only compliance reports remain available.",
+    "openBillingPortal": "Open Hub Billing Portal",
+    "contactSupport": "Contact Support",
+    "retryAccess": "Check Payment Status"
   }
 }
 

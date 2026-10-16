@@ -24,4 +24,14 @@ export class TenantRepository {
       where: { slug },
     });
   }
+
+  async updateSettings(
+    id: string,
+    data: { receiptHeader?: string | null; taxId?: string | null; defaultCurrency?: string }
+  ): Promise<Tenant> {
+    return prisma.tenant.update({
+      where: { id },
+      data,
+    });
+  }
 }

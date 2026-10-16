@@ -18,6 +18,7 @@
     "staff": "Gestione Personale",
     "compliance": "Conformità Normativa",
     "notifications": "Notifiche",
+    "migration": "Migrazione Dati",
     "reports": "Rapporti e Analisi",
     "settings": "Impostazioni Sistema",
     "activeTenant": "Organizzazione Attiva",
@@ -420,6 +421,68 @@
       "issueDate": "Data di Rilascio",
       "expiryDate": "Data di Scadenza"
     }
+  },
+  "notifications": {
+    "title": "Notifiche e Avvisi di Sistema",
+    "subtitle": "Avvisi operativi in tempo reale, soglie scorte e monitoraggio normativo",
+    "all": "Tutti gli Avvisi",
+    "unread": "Non Letti",
+    "markRead": "Segna come letto",
+    "markAllRead": "Segna tutti come letti",
+    "noNotifications": "Nessuna notifica trovata",
+    "viewAll": "Visualizza tutte le notifiche",
+    "lowStock": "Scorta Bassa",
+    "compliance": "Conformità",
+    "expiryWarning": "Avviso Scadenza",
+    "system": "Avviso di Sistema"
+  },
+  "migration": {
+    "title": "Migrazione e Importazione Dati",
+    "subtitle": "Onboarding massivo idempotente ed estrazione standardizzata del catalogo, fornitori e clienti",
+    "targetEntity": "Entità di Destinazione",
+    "uploadFile": "Carica File di Migrazione",
+    "downloadTemplate": "Scarica Modello",
+    "execute": "Esegui Importazione",
+    "importSummary": "Riepilogo Importazione",
+    "totalRows": "Righe Totali",
+    "successRows": "Riuscite",
+    "failedRows": "Fallite",
+    "history": "Cronologia Migrazioni"
+  },
+  "settings": {
+    "title": "Impostazioni e Brand Farmacia",
+    "subtitle": "Gestione intestazioni scontrini, identificativi fiscali e stato abbonamento SaaS Hub",
+    "subscriptionSectionTitle": "Abbonamento Hub SaaS",
+    "subscriptionSectionSubtitle": "Fatturazione centralizzata e piano di abbonamento gestiti dall'Hub",
+    "hubTenantId": "Identificativo Hub Tenant",
+    "subscriptionStatus": "Stato Abbonamento",
+    "statusActive": "Attivo",
+    "statusPastDue": "Scaduto / Insoluto",
+    "statusCancelled": "Annullato",
+    "billingPortal": "Gestisci nel Portale di Fatturazione Hub",
+    "brandingSectionTitle": "Configurazione Scontrino e Dati Fiscali",
+    "brandingSectionSubtitle": "Personalizza intestazione ricevuta, partita IVA e valuta operativa predefinita",
+    "receiptHeader": "Testo Intestazione Scontrino",
+    "receiptHeaderPlaceholder": "es: Farmacia Centrale - Sede 1 - Tel: +39 06 1234567",
+    "receiptHeaderHelp": "Stampato all'inizio degli scontrini POS e delle fatture",
+    "taxId": "Partita IVA / Codice Fiscale",
+    "taxIdPlaceholder": "es: IT12345678901",
+    "defaultCurrency": "Valuta Operativa Predefinita",
+    "saveSettings": "Salva Impostazioni Farmacia",
+    "saving": "Salvataggio...",
+    "savedSuccess": "Impostazioni aggiornate con successo",
+    "saveError": "Errore durante l'aggiornamento delle impostazioni",
+    "unauthorizedNotice": "Accesso riservato al PROPRIETARIO e agli amministratori SYSTEM_MANAGE"
+  },
+  "suspended": {
+    "title": "Account Sospeso: Pagamento Richiesto",
+    "subtitle": "L'abbonamento SaaS per questa farmacia risulta insoluto o non attivo.",
+    "badge": "Abbonamento Non Attivo",
+    "explanation": "L'abbonamento della tua struttura è stato impostato come INSOLUTO o ANNULLATO dall'Hub centrale. Le operazioni di scrittura, vendite POS e carichi di magazzino sono bloccate fino alla regolarizzazione.",
+    "safeDataNotice": "Tutti i dati dei pazienti e delle scorte rimangono intatti e al sicuro. I report di conformità in sola lettura rimangono accessibili.",
+    "openBillingPortal": "Apri Portale di Fatturazione",
+    "contactSupport": "Contatta l'Assistenza",
+    "retryAccess": "Verifica Stato Pagamento"
   }
 }
 

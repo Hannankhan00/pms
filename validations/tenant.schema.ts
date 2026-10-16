@@ -14,5 +14,21 @@ export const createTenantSchema = z.object({
 
 export const updateTenantSchema = createTenantSchema.partial();
 
+export const provisionTenantSchema = z.object({
+  hubTenantId: z.string().trim().min(1, "Hub Tenant ID is required"),
+  name: z.string().trim().min(2, "Pharmacy name must be at least 2 characters").max(191),
+  adminHubUserId: z.string().trim().min(1, "Admin Hub User ID is required"),
+  adminEmail: z.string().trim().email("Valid admin email is required"),
+  adminName: z.string().trim().min(1, "Admin name is required"),
+});
+
+export const tenantSettingsSchema = z.object({
+  receiptHeader: z.string().max(1000).optional().nullable(),
+  taxId: z.string().max(100).optional().nullable(),
+  defaultCurrency: z.string().min(1).max(10).optional(),
+});
+
 export type CreateTenantInput = z.infer<typeof createTenantSchema>;
 export type UpdateTenantInput = z.infer<typeof updateTenantSchema>;
+export type ProvisionTenantInput = z.infer<typeof provisionTenantSchema>;
+export type TenantSettingsInput = z.infer<typeof tenantSettingsSchema>;

@@ -143,6 +143,41 @@ function createTenantModelDelegate<T extends Record<string, any>>(
       });
     },
 
+    upsert: async (args: { where: any; update: any; create: any; include?: any; select?: any }) => {
+      const where: any = { tenantId };
+      for (const [k, v] of Object.entries(args.where)) {
+        if (v && typeof v === "object" && "tenantId" in (v as any)) {
+          Object.assign(where, v);
+        } else {
+          where[k] = v;
+        }
+      }
+      where.tenantId = tenantId;
+
+      const existing = await modelDelegate.findFirst({
+        where,
+        select: { id: true },
+      });
+
+      if (existing) {
+        return modelDelegate.update({
+          where: { id: existing.id },
+          data: args.update,
+          include: args.include,
+          select: args.select,
+        });
+      }
+
+      return modelDelegate.create({
+        data: {
+          ...args.create,
+          tenantId,
+        },
+        include: args.include,
+        select: args.select,
+      });
+    },
+
     deleteMany: (args?: any) => {
       return modelDelegate.deleteMany({
         ...args,
@@ -240,6 +275,10 @@ export interface TenantDb {
   accountLedger: any;
   auditLog: any;
   pharmacyLicense: any;
+
+  // Notifications & Data Migrations (Phase 7)
+  notification: any;
+  dataImportJob: any;
 
   transaction: <T>(fn: (txDb: TenantDb) => Promise<T>) => Promise<T>;
 }
@@ -350,6 +389,10 @@ export function tenantDb(tenantId: string, client: DatabaseClient = prisma): Ten
     accountLedger: createTenantModelDelegate(c.accountLedger, tenantId),
     auditLog: createTenantModelDelegate(c.auditLog, tenantId),
     pharmacyLicense: createTenantModelDelegate(c.pharmacyLicense, tenantId),
+
+    // Notifications & Data Migrations (Phase 7)
+    notification: createTenantModelDelegate(c.notification, tenantId),
+    dataImportJob: createTenantModelDelegate(c.dataImportJob, tenantId),
 
     /**
      * Runs operations in a database transaction with tenant scope preserved.

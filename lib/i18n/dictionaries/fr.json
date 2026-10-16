@@ -18,6 +18,7 @@
     "staff": "Gestion du Personnel",
     "compliance": "Conformité et Réglementation",
     "notifications": "Notifications",
+    "migration": "Migration de Données",
     "reports": "Rapports et Analyses",
     "settings": "Paramètres Système",
     "activeTenant": "Organisation Active",
@@ -421,6 +422,68 @@
       "issueDate": "Date d'Émission",
       "expiryDate": "Date d'Expiration"
     }
+  },
+  "notifications": {
+    "title": "Notifications et Alertes Système",
+    "subtitle": "Alertes opérationnelles en temps réel, seuils de stock et surveillance réglementaire",
+    "all": "Toutes les Alertes",
+    "unread": "Non Lues",
+    "markRead": "Marquer comme lu",
+    "markAllRead": "Tout marquer comme lu",
+    "noNotifications": "Aucune notification trouvée",
+    "viewAll": "Voir toutes les notifications",
+    "lowStock": "Stock Faible",
+    "compliance": "Conformité",
+    "expiryWarning": "Alerte Expiration",
+    "system": "Alerte Système"
+  },
+  "migration": {
+    "title": "Migration et Importation Groupée",
+    "subtitle": "Intégration idempotente et extraction standardisée du catalogue, fournisseurs et clients",
+    "targetEntity": "Entité Cible",
+    "uploadFile": "Téléverser le Fichier",
+    "downloadTemplate": "Télécharger le Modèle",
+    "execute": "Exécuter l'Importation",
+    "importSummary": "Résumé de l'Importation",
+    "totalRows": "Lignes Totales",
+    "successRows": "Réussies",
+    "failedRows": "Échouées",
+    "history": "Historique des Migrations"
+  },
+  "settings": {
+    "title": "Paramètres et Identité de la Pharmacie",
+    "subtitle": "Gérer les en-têtes de tickets, les identifiants fiscaux et le statut d'abonnement SaaS",
+    "subscriptionSectionTitle": "Abonnement Hub SaaS",
+    "subscriptionSectionSubtitle": "Facturation centralisée et formule d'abonnement gérées par le Hub",
+    "hubTenantId": "Identifiant Hub du Locataire",
+    "subscriptionStatus": "Statut de l'Abonnement",
+    "statusActive": "Actif",
+    "statusPastDue": "En Souffrance",
+    "statusCancelled": "Résilié",
+    "billingPortal": "Gérer sur le Portail Hub",
+    "brandingSectionTitle": "Configuration du Reçu et Fiscalité",
+    "brandingSectionSubtitle": "Personnaliser l'en-tête du ticket, le numéro TVA et la devise principale",
+    "receiptHeader": "Texte d'En-tête de Reçu",
+    "receiptHeaderPlaceholder": "ex: Pharmacie Centrale - Succursale 1 - Tél: +33 1 23 45 67 89",
+    "receiptHeaderHelp": "Imprimé en haut des reçus thermiques du point de vente et des factures",
+    "taxId": "Numéro d'Identification Fiscale / TVA",
+    "taxIdPlaceholder": "ex: FR12345678901",
+    "defaultCurrency": "Devise Opérationnelle par Défaut",
+    "saveSettings": "Enregistrer les Paramètres",
+    "saving": "Enregistrement...",
+    "savedSuccess": "Paramètres mis à jour avec succès",
+    "saveError": "Échec de la mise à jour des paramètres",
+    "unauthorizedNotice": "Accès réservé au PROPRIÉTAIRE et aux administrateurs SYSTEM_MANAGE"
+  },
+  "suspended": {
+    "title": "Compte Suspendu: Paiement Requis",
+    "subtitle": "L'abonnement SaaS de cette pharmacie est en souffrance ou inactif.",
+    "badge": "Abonnement Inactif",
+    "explanation": "L'abonnement de votre établissement a été marqué comme EN SOUFFRANCE ou RÉSILIÉ par le Hub central. Les actions d'écriture, ventes PDV et mouvements de stock sont verrouillés jusqu'à régularisation.",
+    "safeDataNotice": "Toutes les données patients et de pharmacie restent sécurisées. Les rapports de conformité en lecture seule restent accessibles.",
+    "openBillingPortal": "Ouvrir le Portail de Facturation",
+    "contactSupport": "Contacter le Support",
+    "retryAccess": "Vérifier le Statut"
   }
 }
 

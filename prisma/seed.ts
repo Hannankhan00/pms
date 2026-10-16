@@ -289,6 +289,18 @@ const PERMISSIONS = [
     module: "compliance",
     description: "Manage pharmacy operating licenses, certifications, and compliance permits",
   },
+  {
+    code: "system.manage",
+    name: "Manage System & Migrations",
+    module: "system",
+    description: "Perform bulk data imports, migrations, and system configurations",
+  },
+  {
+    code: "notification.view",
+    name: "View Notifications",
+    module: "system",
+    description: "Access system notifications, low stock alerts, and compliance warnings",
+  },
 ];
 
 async function main() {

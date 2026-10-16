@@ -6,6 +6,7 @@ import { Building, ShieldCheck, User, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { CurrencySwitcher } from "@/components/ui/currency-switcher";
+import { NotificationBell } from "@/components/layout/notification-bell";
 import { useI18n } from "@/lib/i18n/context";
 
 interface TopbarProps {
@@ -39,10 +40,11 @@ export function Topbar({
         </Badge>
       </div>
 
-      {/* Right: Language Switcher, Currency Switcher, User identity & Mock Hub SSO Indicator */}
+      {/* Right: Language Switcher, Currency Switcher, Notification Bell, User identity & Mock Hub SSO Indicator */}
       <div className="flex items-center gap-3">
         <LanguageSwitcher />
         <CurrencySwitcher />
+        <NotificationBell />
 
         <div className="hidden items-center gap-2 rounded-full border border-[#CBD5E1] bg-[#F8FAFC] px-3 py-1 text-xs text-[#0F172A] sm:flex">
           <span className="font-medium text-[#475569]">{t.common.hubContext}:</span>
